@@ -14,7 +14,7 @@
 
 services:
   postgres:
-    image: docker.io/postgis/postgis:17-3.5
+    image: docker.io/postgis/postgis:18-3.6
     platform: linux/amd64
     environment:
       POSTGRES_USER: ngb
