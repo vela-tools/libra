@@ -29,7 +29,7 @@ services:
       retries: 10
 
   scorpio:
-    image: docker.io/scorpiobroker/all-in-one-runner:java-6.0.1
+    image: docker.io/scorpiobroker/all-in-one-runner:java-6.0.2
     platform: linux/amd64
     environment:
       DBHOST: postgres
