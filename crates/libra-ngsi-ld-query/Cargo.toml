@@ -1,0 +1,27 @@
+[package]
+name = "libra-ngsi-ld-query"
+description = "The NGSI-LD query parameter model: parsing, term expansion, and a canonical form"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-jsonld-term-expansion.workspace = true
+derive_more = { version = "2.1.1", features = ["display"] }
+http = "1.5.0"
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+jstrict = "0.16.0"
+percent-encoding = "2.3.2"
+serde = { version = "1.0.229", features = ["derive"] }
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+serde_json = "1.0.154"
+
+[lints]
+workspace = true

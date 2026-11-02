@@ -1,0 +1,63 @@
+name: fuzz
+
+# A short run on every change, so a target that stops building or a seed that starts failing is
+# caught where it was introduced. There is no long run here: libFuzzer prints a crashing input to
+# the job log, and this repository's logs are public, so a long campaign, the run most likely to
+# find a vulnerability in code already released, runs where its log stays private. New inputs are
+# written to a scratch directory, so the checked-in corpus stays the reviewed seeds.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: fuzz-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: cargo fuzz run ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - bearer_token
+          - claims
+          - context_document
+          - context_layer
+          - jwks_document
+          - key_id
+          - link_header
+          - media_type
+          - order_by
+          - policy_file
+          - projection
+          - q_filter
+          - query_string
+          - resource_path
+          - scope_q
+          - tenant
+          - type_selection
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-fuzz
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: fuzz
+      # The installed cargo-fuzz is a static musl binary and defaults to building for the platform it
+      # was built for. The address sanitizer cannot run against a statically linked libc, so the
+      # runner's own target is named.
+      - run: cargo +nightly fuzz build --target x86_64-unknown-linux-gnu ${{ matrix.target }}
+      # libFuzzer refuses a corpus directory that does not exist.
+      - run: mkdir -p "$RUNNER_TEMP/corpus"
+      - run: >-
+          cargo +nightly fuzz run --target x86_64-unknown-linux-gnu ${{ matrix.target }}
+          "$RUNNER_TEMP/corpus" fuzz/corpus/${{ matrix.target }}
+          -- -max_total_time=60 -artifact_prefix="$RUNNER_TEMP/"

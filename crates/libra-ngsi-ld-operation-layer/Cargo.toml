@@ -1,0 +1,23 @@
+[package]
+name = "libra-ngsi-ld-operation-layer"
+description = "Classifies a request's NGSI-LD operation once and places it in request extensions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-ngsi-ld-operation.workspace = true
+libra-problem-details.workspace = true
+axum = "0.8.9"
+thiserror = "2.0.21"
+tower = { version = "0.5.3", features = ["util"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+
+[lints]
+workspace = true

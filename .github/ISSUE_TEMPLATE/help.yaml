@@ -1,0 +1,40 @@
+name: Help and questions
+description: Ask how to accomplish something with Libra.
+title: "[Help]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a look at the [documentation](https://github.com/vela-tools/libra/tree/main/docs) first.
+        Use this form for usage questions; if something is actually broken, use the Bug report form instead.
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: Describe the goal in terms of who should be able to do what with which entities.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: The configuration, policy, or request you are working with, and what happened. Remove credentials first.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `libra --version`.
+      placeholder: 1.0.0-beta.1
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked the documentation and the existing issues.
+          required: true

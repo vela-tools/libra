@@ -1,0 +1,66 @@
+name: pages
+
+# Builds the documentation site from vela-tools/libra-docs and deploys it to this repository's
+# GitHub Pages, served at https://vela-tools.github.io/libra/.
+#
+# Dispatched by hand only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag or SHA of libra-docs to publish.
+        required: false
+        default: main
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: npm run build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          repository: vela-tools/libra-docs
+          ref: ${{ inputs.ref || 'main' }}
+          # showLastUpdateTime reads the git history to date each page, and a shallow clone dates
+          # every one of them from the checkout instead.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # onBrokenLinks is 'throw', so a broken internal link fails here rather than going live.
+      - name: Build
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

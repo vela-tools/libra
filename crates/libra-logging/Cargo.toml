@@ -1,0 +1,23 @@
+[package]
+name = "libra-logging"
+description = "Tracing subscriber initialisation for Libra: console and file sinks, formats, rotation"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+thiserror = "2.0.21"
+tracing = "0.1.44"
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", features = ["json"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tempfile = "3.27.0"
+
+[lints]
+workspace = true

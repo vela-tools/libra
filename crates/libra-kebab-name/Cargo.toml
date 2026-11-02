@@ -1,0 +1,20 @@
+[package]
+name = "libra-kebab-name"
+description = "A validated lowercase kebab-case name, for the keys Libra reads out of its own files"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+derive_more = { version = "2.1.1", features = ["display", "into"] }
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+toml = "1.1.8"
+
+[lints]
+workspace = true

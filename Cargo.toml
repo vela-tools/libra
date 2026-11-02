@@ -1,6 +1,178 @@
+[workspace]
+members = [".", "crates/*"]
+resolver = "3"
+
+# Every member inherits the workspace version and licence: the tree releases as a unit, not per crate.
+[workspace.package]
+version = "1.0.0-beta.1"
+edition = "2024"
+rust-version = "1.98.0"
+license = "EUPL-1.2"
+repository = "https://github.com/vela-tools/libra"
+# Nothing here goes to crates.io: the proxy ships as a container image.
+publish = false
+
 [package]
 name = "libra"
-version = "0.1.0"
-edition = "2024"
+description = "An NGSI-LD authentication and authorization proxy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
 
 [dependencies]
+libra-build-info.workspace = true
+libra-config.workspace = true
+libra-identity-key-commands.workspace = true
+libra-server.workspace = true
+clap = { version = "4.6.7", features = ["derive"] }
+clap-markdown = "0.1.5"
+clap-themes = "0.1.3"
+human-panic = "2.0.8"
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread"] }
+
+[dev-dependencies]
+libra-enforcement-attribute.workspace = true
+libra-enforcement-type.workspace = true
+libra-entity-preflight.workspace = true
+libra-jsonld-context.workspace = true
+libra-jsonld-context-layer.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-operation-layer.workspace = true
+libra-ngsi-ld-query-layer.workspace = true
+libra-ngsi-ld-representation-layer.workspace = true
+libra-policy-layer.workspace = true
+libra-policy-model.workspace = true
+libra-policy-store.workspace = true
+libra-problem-details.workspace = true
+libra-tenant-layer.workspace = true
+libra-test-harness.workspace = true
+axum = "0.8.9"
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+reqwest = { version = "0.13.5", features = ["blocking", "json"] }
+serde_json = "1.0.154"
+strum = { version = "0.28.0", features = ["derive"] }
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+toml = "1.1.8"
+tower = { version = "0.5.3", features = ["util"] }
+url = "2.5.8"
+
+[workspace.dependencies]
+libra-audit = { path = "crates/libra-audit" }
+libra-build-info = { path = "crates/libra-build-info" }
+libra-config = { path = "crates/libra-config" }
+libra-enforcement-aggregation = { path = "crates/libra-enforcement-aggregation" }
+libra-enforcement-attribute = { path = "crates/libra-enforcement-attribute" }
+libra-enforcement-member = { path = "crates/libra-enforcement-member" }
+libra-enforcement-scope = { path = "crates/libra-enforcement-scope" }
+libra-enforcement-time = { path = "crates/libra-enforcement-time" }
+libra-enforcement-type = { path = "crates/libra-enforcement-type" }
+libra-entity-preflight = { path = "crates/libra-entity-preflight" }
+libra-fetched-body = { path = "crates/libra-fetched-body" }
+libra-forwarding = { path = "crates/libra-forwarding" }
+libra-hardening = { path = "crates/libra-hardening" }
+libra-health = { path = "crates/libra-health" }
+libra-identity-api-key = { path = "crates/libra-identity-api-key" }
+libra-identity-api-key-authenticator = { path = "crates/libra-identity-api-key-authenticator" }
+libra-identity-authenticator = { path = "crates/libra-identity-authenticator" }
+libra-identity-claims = { path = "crates/libra-identity-claims" }
+libra-identity-jwks = { path = "crates/libra-identity-jwks" }
+libra-identity-jwt = { path = "crates/libra-identity-jwt" }
+libra-identity-key-commands = { path = "crates/libra-identity-key-commands" }
+libra-identity-key-store = { path = "crates/libra-identity-key-store" }
+libra-identity-layer = { path = "crates/libra-identity-layer" }
+libra-identity-propagation = { path = "crates/libra-identity-propagation" }
+libra-json-body = { path = "crates/libra-json-body" }
+libra-jsonld-context = { path = "crates/libra-jsonld-context" }
+libra-jsonld-context-layer = { path = "crates/libra-jsonld-context-layer" }
+libra-jsonld-term-expansion = { path = "crates/libra-jsonld-term-expansion" }
+libra-kebab-name = { path = "crates/libra-kebab-name" }
+libra-linked-entity-layer = { path = "crates/libra-linked-entity-layer" }
+libra-log-capture = { path = "crates/libra-log-capture" }
+libra-logging = { path = "crates/libra-logging" }
+libra-management-auth = { path = "crates/libra-management-auth" }
+libra-metrics = { path = "crates/libra-metrics" }
+libra-ngsi-ld-entity-document = { path = "crates/libra-ngsi-ld-entity-document" }
+libra-ngsi-ld-metadata-index = { path = "crates/libra-ngsi-ld-metadata-index" }
+libra-ngsi-ld-operation = { path = "crates/libra-ngsi-ld-operation" }
+libra-ngsi-ld-operation-layer = { path = "crates/libra-ngsi-ld-operation-layer" }
+libra-ngsi-ld-query = { path = "crates/libra-ngsi-ld-query" }
+libra-ngsi-ld-query-layer = { path = "crates/libra-ngsi-ld-query-layer" }
+libra-ngsi-ld-registration = { path = "crates/libra-ngsi-ld-registration" }
+libra-ngsi-ld-representation = { path = "crates/libra-ngsi-ld-representation" }
+libra-ngsi-ld-representation-layer = { path = "crates/libra-ngsi-ld-representation-layer" }
+libra-policy-engine = { path = "crates/libra-policy-engine" }
+libra-policy-layer = { path = "crates/libra-policy-layer" }
+libra-policy-model = { path = "crates/libra-policy-model" }
+libra-policy-store = { path = "crates/libra-policy-store" }
+libra-problem-details = { path = "crates/libra-problem-details" }
+libra-proxy = { path = "crates/libra-proxy" }
+libra-registration-disclosure = { path = "crates/libra-registration-disclosure" }
+libra-response-json = { path = "crates/libra-response-json" }
+libra-server = { path = "crates/libra-server" }
+libra-tenant = { path = "crates/libra-tenant" }
+libra-tenant-layer = { path = "crates/libra-tenant-layer" }
+libra-test-harness = { path = "crates/libra-test-harness" }
+libra-upstream-deadlines = { path = "crates/libra-upstream-deadlines" }
+libra-via-pseudonym = { path = "crates/libra-via-pseudonym" }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+opt-level = 3
+
+# What cargo-mutants builds with, set in .cargo/mutants.toml. Every mutant is a rebuild, and debug
+# information is most of what a rebuild writes and links, so dropping it shortens each one.
+[profile.mutants]
+inherits = "test"
+debug = "none"
+
+# Lint levels live here rather than in CI flags, so a local `cargo clippy` fails for the same
+# reasons CI does. Escapes are scoped in clippy.toml instead of weakening this list.
+[workspace.lints.rust]
+# An `#[expect]` whose lint no longer fires is dead weight that hides the next real violation.
+unfulfilled_lint_expectations = "deny"
+# Libra parses hostile input in front of the data it guards, so memory safety rests on the compiler
+# alone. `forbid` cannot be lowered by an attribute inside a crate.
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+absolute_paths = "deny"
+# `#[allow]` is not permitted anywhere. A lint is either satisfied or, in test code only, expected
+# with `#[expect]` and a reason. That `#[expect]` never appears in production code is checked by
+# `tests/lint_policy.rs`, because clippy has no lint for it.
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
+arc_with_non_send_sync = "deny"
+await_holding_lock = "deny"
+branches_sharing_code = "warn"
+cast_possible_truncation = "deny"
+cast_possible_wrap = "deny"
+cast_sign_loss = "deny"
+cloned_instead_of_copied = "warn"
+expect_used = "deny"
+future_not_send = "deny"
+get_unwrap = "deny"
+map_unwrap_or = "deny"
+missing_const_for_fn = "warn"
+needless_collect = "warn"
+panic = "deny"
+redundant_clone = "warn"
+todo = "deny"
+unimplemented = "deny"
+unnecessary_self_imports = "warn"
+unreachable = "deny"
+unwrap_used = "deny"
+used_underscore_binding = "warn"
+wildcard_dependencies = "deny"
+wildcard_enum_match_arm = "deny"
+wildcard_imports = "deny"
+
+[lints]
+workspace = true

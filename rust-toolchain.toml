@@ -1,0 +1,6 @@
+# Pinned so a local build, a container build, and CI all use one compiler.
+# The formatting gate is the exception: rustfmt.toml enables unstable features, so `cargo fmt`
+# must be run as `cargo +nightly fmt`.
+[toolchain]
+channel = "1.99.1"
+components = ["clippy", "rustfmt"]

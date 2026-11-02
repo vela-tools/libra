@@ -1,0 +1,44 @@
+[package]
+name = "libra-enforcement-scope"
+description = "NGSI-LD hierarchical scope restrictions and their enforcement"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-enforcement-member.workspace = true
+libra-entity-preflight.workspace = true
+libra-json-body.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-ngsi-ld-entity-document.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-operation-layer.workspace = true
+libra-ngsi-ld-query.workspace = true
+libra-ngsi-ld-query-layer.workspace = true
+libra-ngsi-ld-registration.workspace = true
+libra-ngsi-ld-representation.workspace = true
+libra-policy-engine.workspace = true
+libra-policy-model.workspace = true
+libra-problem-details.workspace = true
+libra-response-json.workspace = true
+axum = "0.8.9"
+http = "1.5.0"
+jstrict = "0.16.0"
+thiserror = "2.0.21"
+tower = { version = "0.5.3", features = ["util"] }
+tracing = "0.1.44"
+url = "2.5.8"
+
+[dev-dependencies]
+libra-config.workspace = true
+libra-ngsi-ld-representation-layer.workspace = true
+http-body-util = "0.1.5"
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["io-util", "macros", "net", "rt", "sync", "time"] }
+wiremock = "0.6.5"
+
+[lints]
+workspace = true

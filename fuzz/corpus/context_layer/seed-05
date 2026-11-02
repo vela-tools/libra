@@ -1,0 +1,3 @@
+application/json
+
+{"id":"urn:ngsi-ld:Vehicle:A1","type":"Vehicle","@context":{}}

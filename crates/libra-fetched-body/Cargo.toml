@@ -1,0 +1,21 @@
+[package]
+name = "libra-fetched-body"
+description = "reads the body of a response Libra fetched for itself, stopping at a byte cap"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+reqwest = "0.13.5"
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["io-util", "macros", "net", "rt"] }
+wiremock = "0.6.5"
+
+[lints]
+workspace = true

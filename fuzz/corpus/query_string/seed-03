@@ -1,0 +1,1 @@
+type=(Vehicle%7CCar);Bus&pick=id,type,speed&omit=location

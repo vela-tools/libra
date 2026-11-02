@@ -1,0 +1,16 @@
+[[policy]]
+id = "recent-only"
+priority = 10
+
+[policy.condition]
+groups = ["analyst"]
+operations = ["read"]
+entity-types = ["Sensor"]
+
+[policy.access]
+effect = "allow"
+
+[policy.access.time]
+type = "relative"
+duration = "PT24H"
+current-state = "values-in-window"

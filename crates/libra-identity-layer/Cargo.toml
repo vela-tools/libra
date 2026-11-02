@@ -1,0 +1,26 @@
+[package]
+name = "libra-identity-layer"
+description = "the Tower adapter that establishes who the caller is"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-audit.workspace = true
+libra-identity-authenticator.workspace = true
+libra-policy-model.workspace = true
+libra-problem-details.workspace = true
+libra-tenant.workspace = true
+axum = "0.8.9"
+tower = { version = "0.5.3", features = ["util"] }
+tracing = "0.1.44"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+
+[lints]
+workspace = true

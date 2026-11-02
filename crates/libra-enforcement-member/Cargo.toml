@@ -1,0 +1,30 @@
+[package]
+name = "libra-enforcement-member"
+description = "enforcement of a restriction on one entity member, scope or type: the steps both share"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-entity-preflight.workspace = true
+libra-json-body.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-ngsi-ld-entity-document.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-query.workspace = true
+libra-response-json.workspace = true
+derive_more = { version = "2.1.1", features = ["display"] }
+http = "1.5.0"
+jstrict = "0.16.0"
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+url = "2.5.8"
+
+[lints]
+workspace = true

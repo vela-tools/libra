@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/vela-tools/libra/security/policy
+    about: Never open a public issue for a vulnerability. Follow the responsible disclosure process in the Libra security policy.
+  - name: Documentation
+    url: https://github.com/vela-tools/libra/tree/main/docs
+    about: Browse the getting-started guide and the configuration reference before opening an issue.
+  - name: Contact Vela Tools
+    url: https://velacontext.com/contactus
+    about: Commercial enquiries, or anything else that should not be discussed in a public issue.

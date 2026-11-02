@@ -1,0 +1,1 @@
+{"sub":"service-account-fleet","preferred_username":"fleet-reader","realm_access":{"roles":["reader"]},"groups":["/fleet"],"scope":"openid profile"}

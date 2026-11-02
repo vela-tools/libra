@@ -1,0 +1,27 @@
+[package]
+name = "libra-hardening"
+description = "request hardening: identity header stripping, payload limits, in-flight ceiling, security headers"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+libra-problem-details.workspace = true
+axum = "0.8.9"
+http-body-util = "0.1.5"
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["sync"] }
+tower = { version = "0.5.3", features = ["util"] }
+tower-helmet = "0.3.0"
+tracing = "0.1.44"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt", "sync", "time"] }
+
+[lints]
+workspace = true

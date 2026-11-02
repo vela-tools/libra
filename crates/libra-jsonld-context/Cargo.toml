@@ -1,0 +1,39 @@
+[package]
+name = "libra-jsonld-context"
+description = "Resolves the JSON-LD @context that applies to an NGSI-LD request, fail-closed"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+libra-fetched-body.workspace = true
+libra-json-body.workspace = true
+libra-jsonld-term-expansion.workspace = true
+iri-rs = { version = "3.4.1", features = ["static"] }
+jsonld = { version = "=0.26.0", features = ["ahash"] }
+jstrict = "0.16.0"
+mediatype = "0.23.0"
+moka = { version = "0.12.16", features = ["future"] }
+percent-encoding = "2.3.2"
+reqwest = { version = "0.13.5", features = ["json"] }
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["time"] }
+tracing = "0.1.44"
+url = "2.5.8"
+url-macro = "0.2.5"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+reqwest = { version = "0.13.5", features = ["blocking", "json"] }
+serde_json = "1.0.154"
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["io-util", "macros", "net", "rt", "time"] }
+wiremock = "0.6.5"
+
+[lints]
+workspace = true

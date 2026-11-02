@@ -1,0 +1,27 @@
+[package]
+name = "libra-health"
+description = "liveness and readiness, including upstream reachability"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-identity-jwks.workspace = true
+axum = "0.8.9"
+reqwest = { version = "0.13.5", features = ["json"] }
+tokio = { version = "1.54.1", features = ["sync", "time"] }
+tracing = "0.1.44"
+url = "2.5.8"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+serde_json = "1.0.154"
+tokio = { version = "1.54.1", features = ["macros", "rt", "time"] }
+tower = { version = "0.5.3", features = ["util"] }
+wiremock = "0.6.5"
+
+[lints]
+workspace = true

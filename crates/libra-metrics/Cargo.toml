@@ -1,0 +1,23 @@
+[package]
+name = "libra-metrics"
+description = "the Prometheus metrics layer and its endpoint"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+axum = "0.8.9"
+axum-prometheus = "0.10.1"
+
+[dev-dependencies]
+http-body-util = "0.1.5"
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+tower = { version = "0.5.3", features = ["util"] }
+
+[lints]
+workspace = true

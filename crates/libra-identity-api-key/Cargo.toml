@@ -1,0 +1,28 @@
+[package]
+name = "libra-identity-api-key"
+description = "the Libra API key format: generation, parsing and the stored verifier"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+bs58 = { version = "0.5.1", features = ["check"] }
+derive_more = { version = "2.1.1", features = ["display"] }
+getrandom = "0.4.3"
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+secrecy = "0.10.3"
+sha2 = "0.11.1"
+subtle = "2.6.1"
+thiserror = "2.0.21"
+ulid = { version = "3.0.0", default-features = false }
+zeroize = "1.9.1"
+
+[dev-dependencies]
+hex = "0.4.3"
+pretty_assertions = "1.4.1"
+
+[lints]
+workspace = true

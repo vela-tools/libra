@@ -1,0 +1,203 @@
+[package]
+name = "libra-fuzz"
+description = "Fuzz targets for the parsers Libra runs on input from outside its trust boundary"
+version = "0.0.0"
+edition = "2024"
+license = "EUPL-1.2"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+# A workspace of its own: the targets link libFuzzer and build only under `cargo fuzz` on nightly, so
+# they stay out of the workspace that stable `cargo check`, `clippy` and `test` build. The Libra crates
+# are therefore reached by path rather than through the root `[workspace.dependencies]`.
+[workspace]
+members = ["."]
+
+[dependencies]
+libra-config = { path = "../crates/libra-config" }
+libra-enforcement-scope = { path = "../crates/libra-enforcement-scope" }
+libra-identity-authenticator = { path = "../crates/libra-identity-authenticator" }
+libra-identity-claims = { path = "../crates/libra-identity-claims" }
+libra-identity-jwks = { path = "../crates/libra-identity-jwks" }
+libra-identity-jwt = { path = "../crates/libra-identity-jwt" }
+libra-json-body = { path = "../crates/libra-json-body" }
+libra-jsonld-context = { path = "../crates/libra-jsonld-context" }
+libra-jsonld-context-layer = { path = "../crates/libra-jsonld-context-layer" }
+libra-jsonld-term-expansion = { path = "../crates/libra-jsonld-term-expansion" }
+libra-ngsi-ld-operation = { path = "../crates/libra-ngsi-ld-operation" }
+libra-ngsi-ld-query = { path = "../crates/libra-ngsi-ld-query" }
+libra-ngsi-ld-representation = { path = "../crates/libra-ngsi-ld-representation" }
+libra-policy-model = { path = "../crates/libra-policy-model" }
+libra-tenant = { path = "../crates/libra-tenant" }
+axum = "0.8.9"
+http = "1.5.0"
+jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
+jstrict = "0.16.0"
+libfuzzer-sys = "0.4.13"
+serde_json = "1.0.154"
+tokio = { version = "1.54.1", features = ["net", "rt-multi-thread", "sync"] }
+toml = "1.1.8"
+tower = { version = "0.5.3", features = ["util"] }
+url = "2.5.8"
+
+[[bin]]
+name = "bearer_token"
+path = "fuzz_targets/bearer_token.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "claims"
+path = "fuzz_targets/claims.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "context_document"
+path = "fuzz_targets/context_document.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "context_layer"
+path = "fuzz_targets/context_layer.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "jwks_document"
+path = "fuzz_targets/jwks_document.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "key_id"
+path = "fuzz_targets/key_id.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "link_header"
+path = "fuzz_targets/link_header.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "media_type"
+path = "fuzz_targets/media_type.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "order_by"
+path = "fuzz_targets/order_by.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "policy_file"
+path = "fuzz_targets/policy_file.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "projection"
+path = "fuzz_targets/projection.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "q_filter"
+path = "fuzz_targets/q_filter.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "query_string"
+path = "fuzz_targets/query_string.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "resource_path"
+path = "fuzz_targets/resource_path.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "scope_q"
+path = "fuzz_targets/scope_q.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "tenant"
+path = "fuzz_targets/tenant.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "type_selection"
+path = "fuzz_targets/type_selection.rs"
+test = false
+doc = false
+bench = false
+
+# The lint levels of the root workspace, which a workspace of its own cannot inherit.
+[lints.rust]
+# An `#[expect]` whose lint no longer fires is dead weight that hides the next real violation.
+unfulfilled_lint_expectations = "deny"
+# Libra parses hostile input in front of the data it guards, so memory safety rests on the compiler
+# alone. `forbid` cannot be lowered by an attribute inside a crate.
+unsafe_code = "forbid"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+absolute_paths = "deny"
+# `#[allow]` is not permitted anywhere. A lint is either satisfied or, in test code only, expected
+# with `#[expect]` and a reason. That `#[expect]` never appears in production code is checked by
+# `tests/lint_policy.rs`, because clippy has no lint for it.
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
+arc_with_non_send_sync = "deny"
+await_holding_lock = "deny"
+branches_sharing_code = "warn"
+cast_possible_truncation = "deny"
+cast_possible_wrap = "deny"
+cast_sign_loss = "deny"
+cloned_instead_of_copied = "warn"
+expect_used = "deny"
+future_not_send = "deny"
+get_unwrap = "deny"
+map_unwrap_or = "deny"
+missing_const_for_fn = "warn"
+needless_collect = "warn"
+panic = "deny"
+redundant_clone = "warn"
+todo = "deny"
+unimplemented = "deny"
+unnecessary_self_imports = "warn"
+unreachable = "deny"
+unwrap_used = "deny"
+used_underscore_binding = "warn"
+wildcard_dependencies = "deny"
+wildcard_enum_match_arm = "deny"
+wildcard_imports = "deny"

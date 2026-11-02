@@ -1,0 +1,22 @@
+[package]
+name = "libra-ngsi-ld-entity-document"
+description = "Walking the entities of an NGSI-LD response document, linked entities included"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-ngsi-ld-query.workspace = true
+libra-ngsi-ld-representation.workspace = true
+jstrict = "0.16.0"
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[lints]
+workspace = true

@@ -1,0 +1,66 @@
+[package]
+name = "libra-server"
+description = "Assembling and serving the Libra proxy, with the extension points a binary fills"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-audit.workspace = true
+libra-build-info.workspace = true
+libra-config.workspace = true
+libra-enforcement-aggregation.workspace = true
+libra-enforcement-attribute.workspace = true
+libra-enforcement-scope.workspace = true
+libra-enforcement-time.workspace = true
+libra-enforcement-type.workspace = true
+libra-entity-preflight.workspace = true
+libra-hardening.workspace = true
+libra-health.workspace = true
+libra-identity-api-key-authenticator.workspace = true
+libra-identity-authenticator.workspace = true
+libra-identity-jwks.workspace = true
+libra-identity-jwt.workspace = true
+libra-identity-key-store.workspace = true
+libra-identity-layer.workspace = true
+libra-identity-propagation.workspace = true
+libra-jsonld-context.workspace = true
+libra-jsonld-context-layer.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-logging.workspace = true
+libra-management-auth.workspace = true
+libra-metrics.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-operation-layer.workspace = true
+libra-ngsi-ld-query-layer.workspace = true
+libra-ngsi-ld-representation-layer.workspace = true
+libra-policy-layer.workspace = true
+libra-policy-model.workspace = true
+libra-policy-store.workspace = true
+libra-problem-details.workspace = true
+libra-proxy.workspace = true
+libra-registration-disclosure.workspace = true
+libra-tenant-layer.workspace = true
+libra-upstream-deadlines.workspace = true
+axum = "0.8.9"
+hyper = { version = "1.12.0", features = ["http1", "http2", "server"] }
+hyper-util = { version = "0.1.21", features = ["server-auto", "server-graceful", "service", "tokio"] }
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["macros", "net", "rt", "signal", "sync", "time"] }
+tower = { version = "0.5.3", features = ["util"] }
+tower-http = { version = "0.7.1", features = ["cors", "request-id", "trace", "util", "uuid"] }
+tracing = "0.1.44"
+url = "2.5.8"
+
+[dev-dependencies]
+libra-log-capture.workspace = true
+pretty_assertions = "1.4.1"
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["io-util", "macros", "net", "rt", "sync", "time"] }
+
+[lints]
+workspace = true

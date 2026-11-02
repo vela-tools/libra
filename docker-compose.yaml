@@ -1,0 +1,64 @@
+# Libra in front of a Scorpio broker, for trying Libra out on one machine.
+#
+# Put policy files in a `policies` directory beside this file, then run `docker compose up --detach`.
+# With no policy, Libra starts and refuses every request. Getting started walks through the first
+# policy, the first key and the first request: https://vela-tools.github.io/libra/docs/getting-started
+#
+# The broker has no authentication of its own, so neither it nor its database publishes a port: the
+# only way in is Libra on port 5667. The database credentials are fixed and only reachable inside
+# this stack. Change them, and the `Via` pseudonym, before running this anywhere that matters.
+#
+# The broker and its database are the versions Libra is tested against. Both upstream images are
+# published for amd64 only, so the platform is named: an arm64 host then runs them under emulation
+# instead of refusing to pull them.
+
+services:
+  postgres:
+    image: docker.io/postgis/postgis:17-3.5
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: ngb
+      POSTGRES_PASSWORD: ngb
+      POSTGRES_DB: ngb
+    volumes:
+      - broker-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ngb -d ngb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  scorpio:
+    image: docker.io/scorpiobroker/all-in-one-runner:java-6.0.1
+    platform: linux/amd64
+    environment:
+      DBHOST: postgres
+      DBPORT: 5432
+      DBNAME: ngb
+      DBUSER: ngb
+      DBPASS: ngb
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  libra:
+    image: ghcr.io/vela-tools/libra:v1.0.0-beta.1
+    ports:
+      - "5667:5667"
+    environment:
+      LIBRA__BROKER__URL: http://scorpio:9090
+      LIBRA__PROXY__VIA_PSEUDONYM: libra-site-a
+    volumes:
+      - ./policies:/etc/libra/policies:ro
+      - libra-keys:/var/lib/libra
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - scorpio
+
+volumes:
+  broker-data:
+  libra-keys:

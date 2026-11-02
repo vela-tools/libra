@@ -1,0 +1,23 @@
+[package]
+name = "libra-test-harness"
+description = "Starting the Libra binary against a real broker, with an identity provider of its own, for the integration suites"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+base64 = "0.23.1"
+jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
+rand = "0.10.3"
+reqwest = { version = "0.13.5", features = ["blocking", "json"] }
+rsa = "=0.10.0-rc.19"
+serde_json = "1.0.154"
+tempfile = "3.27.0"
+url = "2.5.8"
+
+[lints]
+workspace = true

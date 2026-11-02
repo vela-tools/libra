@@ -1,0 +1,41 @@
+[package]
+name = "libra-policy-layer"
+description = "The Tower adapter that evaluates a request against the policy set"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-audit.workspace = true
+libra-jsonld-context-layer.workspace = true
+libra-jsonld-term-expansion.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-operation-layer.workspace = true
+libra-ngsi-ld-query.workspace = true
+libra-ngsi-ld-query-layer.workspace = true
+libra-policy-engine.workspace = true
+libra-policy-model.workspace = true
+libra-policy-store.workspace = true
+libra-problem-details.workspace = true
+libra-tenant.workspace = true
+axum = "0.8.9"
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+tower = { version = "0.5.3", features = ["util"] }
+tracing = "0.1.44"
+
+[dev-dependencies]
+libra-log-capture.workspace = true
+libra-config.workspace = true
+libra-jsonld-context.workspace = true
+http-body-util = "0.1.5"
+pretty_assertions = "1.4.1"
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+url = "2.5.8"
+
+[lints]
+workspace = true

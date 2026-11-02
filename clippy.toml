@@ -1,0 +1,12 @@
+# `core` is allowed because shadow-rs's generated build-info code has a `Display` impl that emits
+# `core::fmt::*` paths the crate cannot rewrite.
+absolute-paths-allowed-crates = ["core"]
+
+allow-expect-in-tests = true
+allow-panic-in-tests = true
+allow-unwrap-in-tests = true
+
+# The `[logging]` sections are one boolean key per switch, and the file format is the contract: the
+# console section has five. Raised from the default of three here, once, instead of silenced on each
+# struct, because attributes that silence a lint are not allowed anywhere.
+max-struct-bools = 5

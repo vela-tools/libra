@@ -1,0 +1,21 @@
+[package]
+name = "libra-ngsi-ld-registration"
+description = "The document shape of an NGSI-LD context source registration, and narrowing what it registers"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+jstrict = "0.16.0"
+libra-jsonld-term-expansion.workspace = true
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[lints]
+workspace = true

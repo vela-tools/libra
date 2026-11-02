@@ -1,0 +1,59 @@
+# The stack the integration suite runs against: a context broker and its database, and nothing
+# else. Libra itself is deliberately absent: the suite spawns the binary cargo just built, so what
+# is under test is this checkout rather than whatever an image happened to be built with. So is an
+# identity provider: the suite signs its own tokens and serves their key set itself.
+#
+# Nothing here is a deployment example. Credentials are fixed so the suite can reach them, and the
+# broker has no authentication of its own.
+
+services:
+  postgres:
+    # Both images are pinned by digest alone. A tag beside a digest is not checked against it, so a
+    # tag here would be a label that can claim any version, and a tag on its own can move, turning the
+    # suite red or green with no change here; the parity suite is sensitive to the broker's version.
+    # This digest is the upstream `17-3.5` tag and holds PostgreSQL 17.5 with PostGIS 3.5.2.
+    #
+    # Both upstream images are published for amd64 only, so the platform is named: an arm64 host then
+    # runs them under emulation rather than refusing a manifest with no matching platform.
+    image: docker.io/postgis/postgis@sha256:01a6a70e41e6c4467c8f55f6063555ed72db2d6662cd0d571040d42eadaeb6f6
+    platform: linux/amd64
+    # The suite gives every test a tenant of its own, and the broker opens a connection pool per tenant
+    # and never closes it. With the default limit of 100 connections the later tests fail with "too many
+    # clients already", whatever order or parallelism they run in.
+    command: ["postgres", "-c", "max_connections=1000"]
+    environment:
+      POSTGRES_USER: ngb
+      POSTGRES_PASSWORD: ngb
+      POSTGRES_DB: ngb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ngb -d ngb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  broker:
+    # This digest is the upstream `java-6.0.1` tag: the Scorpio 6.0.1 all-in-one runner.
+    image: docker.io/scorpiobroker/all-in-one-runner@sha256:9910355d97f4976dd40fff9526db324a62da18c24a43eb4d5b5b05041bcc475f
+    platform: linux/amd64
+    ports:
+      - "9090:9090"
+    # The subscription tests receive the broker's notifications on the host, at
+    # `host.docker.internal`. Docker Desktop resolves that name in every container; Docker on Linux,
+    # where CI runs, resolves it only when it is mapped to the host here.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      DBHOST: postgres
+      DBPORT: 5432
+      DBNAME: ngb
+      DBUSER: ngb
+      DBPASS: ngb
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9090/ngsi-ld/v1/types || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 30s

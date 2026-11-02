@@ -1,0 +1,13 @@
+context = ["https://smartdatamodels.org/context.jsonld"]
+
+[[policy]]
+id = "supervisor-read"
+priority = 100
+
+[policy.condition]
+groups = ["supervisor"]
+operations = ["read"]
+entity-types = ["Vehicle"]
+
+[policy.access]
+effect = "allow"

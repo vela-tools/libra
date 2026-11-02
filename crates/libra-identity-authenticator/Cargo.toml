@@ -1,0 +1,21 @@
+[package]
+name = "libra-identity-authenticator"
+description = "the seam that turns a presented credential into the caller a policy is about"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-policy-model.workspace = true
+derive_more = { version = "2.1.1", features = ["debug", "display", "from"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+
+[lints]
+workspace = true

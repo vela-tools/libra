@@ -1,0 +1,1 @@
+type=Vehicle&join=inline&joinLevel=2&pick=id,owner%7Bname%7D

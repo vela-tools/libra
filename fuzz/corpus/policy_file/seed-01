@@ -1,0 +1,16 @@
+[[policy]]
+id = "dispatcher-read"
+description = "Dispatch reads vehicles and their speed, never where they are"
+priority = 100
+
+[policy.condition]
+groups = ["dispatcher"]
+operations = ["read"]
+entity-types = ["Vehicle"]
+
+[policy.access]
+effect = "allow"
+
+[policy.access.attribute]
+action = "omit"
+attributes = ["location"]

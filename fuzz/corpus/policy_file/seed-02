@@ -1,0 +1,14 @@
+[[policy]]
+id = "gardens-read"
+priority = 50
+
+[policy.condition]
+roles = ["gardener"]
+operations = ["read"]
+
+[policy.access]
+effect = "allow"
+
+[policy.access.scope]
+allowed = ["/Madrid/Gardens/#", "/Madrid/Parks/#"]
+scope-on-write = "required"

@@ -1,0 +1,44 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace --all-features --locked
+
+  # The integration suite and the parity harness skip when no broker is named, and a skipped run
+  # still reports every test as passed. Both variables are set here, so a green job means the
+  # suite ran against Scorpio.
+  integration:
+    name: integration against scorpio
+    runs-on: ubuntu-latest
+    env:
+      LIBRA_INTEGRATION_BROKER: http://localhost:9090
+      LIBRA_PARITY_BROKER: http://localhost:9090
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - run: docker compose --file tests/docker-compose.yaml up --detach --wait
+      - run: cargo test --locked --test integration
+      - run: cargo test --locked -p libra-jsonld-context --test broker_parity
+      - name: Broker logs
+        if: failure()
+        run: docker compose --file tests/docker-compose.yaml logs

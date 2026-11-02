@@ -1,0 +1,31 @@
+[package]
+name = "libra-policy-store"
+description = "Loading, compiling and validating authorization policies, and the snapshot the engine reads"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+libra-jsonld-context.workspace = true
+libra-jsonld-term-expansion.workspace = true
+libra-policy-model.workspace = true
+arc-swap = "1.9.3"
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["fs", "sync"] }
+toml = "1.1.8"
+tracing = "0.1.44"
+
+[dev-dependencies]
+libra-log-capture.workspace = true
+pretty_assertions = "1.4.1"
+tempfile = "3.27.0"
+tokio = { version = "1.54.1", features = ["macros", "rt", "time"] }
+url = "2.5.8"
+wiremock = "0.6.5"
+
+[lints]
+workspace = true

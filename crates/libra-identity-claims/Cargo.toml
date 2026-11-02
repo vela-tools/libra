@@ -1,0 +1,21 @@
+[package]
+name = "libra-identity-claims"
+description = "the identity claims Libra reads out of a validated token"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-policy-model.workspace = true
+serde = { version = "1.0.229", features = ["derive"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+proptest = "1.12.0"
+serde_json = "1.0.154"
+
+[lints]
+workspace = true

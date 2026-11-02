@@ -1,0 +1,152 @@
+# Libra configuration, every key at its built-in default.
+#
+# The file is optional: Libra runs on these defaults when no file is found. Keep only the keys you
+# change. Every name is kebab-case, and a key or a section Libra does not recognise is a startup
+# error rather than one that quietly does nothing. Any key can also be set with
+# `LIBRA__<SECTION>__<KEY>`: a single underscore is the `-` inside a name and `__` separates the
+# section from the key, so `LIBRA__BROKER__URL` sets `[broker] url`.
+
+[libra]
+# Address and port to bind.
+host = "0.0.0.0"
+port = 5667
+# Networks in CIDR notation of the proxies in front of Libra, whose forwarding headers are believed.
+trusted-proxies = []
+# How long a stopping Libra waits for in-flight requests.
+shutdown-grace-seconds = 25
+# How long a client may take to send the start of a request.
+header-read-timeout-seconds = 10
+
+# Required, with no default: the NGSI-LD broker every request is forwarded to.
+# [broker]
+# url = "http://broker:9090"
+
+[proxy]
+pool-idle-timeout-seconds = 60
+pool-max-idle-per-host = 32
+connect-timeout-seconds = 10
+tcp-nodelay = true
+# `http`, or `https` when a TLS terminator sits in front of Libra. Sent as `X-Forwarded-Proto`.
+inbound-scheme = "http"
+# Required, with no default: the name this deployment gives itself in `Via`. Brokers in a
+# federation detect loops by comparing `Via` entries with context source aliases, so it must be
+# unique to the deployment.
+# via-pseudonym = "libra-site-a"
+
+[multitenancy]
+# `require-header`, `authenticate`, or `allow-public`. A request that names a tenant always
+# authenticates; this decides what happens when one names none. With `allow-public`, an anonymous
+# caller reaches the default tenant.
+policy = "authenticate"
+
+# API keys issued by Libra itself, with `libra principal create` and `libra key create` run beside
+# the running proxy. Only one Libra instance may use a key store at a time.
+[key-store]
+enabled = true
+path = "/var/lib/libra/keys.db"
+
+# JWT access tokens from an identity provider of your own. Tokens are read for `sub`, `client_id`,
+# and top-level `groups` and `roles` (RFC 9068).
+# [jwt]
+# jwks-url = "https://idp.example.com/realms/fiware/protocol/openid-connect/certs"
+# issuer = "https://idp.example.com/realms/fiware"
+# audience = "ngsi-client"
+# jwks-transport = "https-only"
+# jwks-cache-duration = 3600
+# algorithm = "RS256"
+# token-type = "any"
+# clock-skew-seconds = 60
+
+[jsonld]
+allow-remote = true
+# Contexts Libra may fetch. An entry ending in `/` matches everything under it, at that path
+# boundary; any other entry is exact. Setting the list replaces it.
+allowed-contexts = ["https://uri.etsi.org/ngsi-ld/", "https://smartdatamodels.org/", "https://raw.githubusercontent.com/smart-data-models/"]
+fetch-timeout-seconds = 5
+max-context-bytes = 1048576
+cache-max-bytes = 67108864
+cache-ttl-seconds = 3600
+# Replacement for the embedded ETSI core context.
+# core-context = "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.9.jsonld"
+
+# Contexts read from disk at startup, keyed by the URL that names them. A preloaded context needs no
+# allow-list entry and works with `allow-remote = false`.
+[jsonld.preloaded-contexts]
+# "https://example.com/context.jsonld" = "/etc/libra/contexts/example.jsonld"
+
+[authz]
+policies-dir = "/etc/libra/policies"
+# What decides when no policy matches. With no policies and `deny`, every request is refused.
+default-effect = "deny"
+
+[aggregation]
+# `refuse` or `raise`: what to do with an aggregated temporal read finer than its policy allows.
+short-period = "refuse"
+
+[audit]
+# Hex HMAC key (`openssl rand -hex 32`) to record each presented credential as its keyed digest.
+# token-fingerprint-key = "..."
+
+[payload]
+enabled = true
+max-body-size-bytes = 2097152
+
+[limits]
+enabled = true
+max-in-flight-requests = 256
+
+[timeout]
+upstream-timeout-seconds = 30
+
+[logging.console]
+enabled = true
+level = "info"
+format = "compact"
+ansi = true
+file-line = false
+target = true
+thread-ids = false
+
+[logging.file]
+enabled = false
+level = "info"
+format = "json"
+directory = "logs"
+file-prefix = "libra"
+rotation = "daily"
+file-line = true
+target = true
+thread-ids = false
+
+[cors]
+# `false`, `true` (the lists below), or `"permissive"`.
+enabled = false
+allow-origins = ["*"]
+allow-methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+allow-headers = ["*"]
+expose-headers = []
+allow-credentials = false
+max-age-seconds = 3600
+
+[prometheus]
+enabled = true
+path = "/ngsi-ld/auth/metrics"
+
+[management-api]
+# Nobody is privileged until named here.
+admin-users = []
+admin-principals = []
+admin-clients = []
+admin-groups = []
+admin-roles = []
+# `privileged` or `authenticated`.
+metrics-access = "privileged"
+info-access = "privileged"
+
+[helmet]
+enabled = true
+
+[representation]
+# `forward` or `refuse`.
+unsatisfiable-accept = "forward"
+contradictory-options = "forward"

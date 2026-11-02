@@ -1,0 +1,43 @@
+[package]
+name = "libra-enforcement-time"
+description = "temporal window restrictions and their enforcement"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-json-body.workspace = true
+libra-linked-entity-layer.workspace = true
+libra-ngsi-ld-entity-document.workspace = true
+libra-ngsi-ld-operation.workspace = true
+libra-ngsi-ld-operation-layer.workspace = true
+libra-ngsi-ld-query.workspace = true
+libra-ngsi-ld-query-layer.workspace = true
+libra-ngsi-ld-representation.workspace = true
+libra-ngsi-ld-representation-layer.workspace = true
+libra-policy-engine.workspace = true
+libra-policy-model.workspace = true
+libra-problem-details.workspace = true
+libra-response-json.workspace = true
+axum = "0.8.9"
+derive_more = { version = "2.1.1", features = ["display"] }
+jiff = { version = "0.2.38", default-features = false, features = ["std"] }
+jstrict = "0.16.0"
+thiserror = "2.0.21"
+tower = { version = "0.5.3", features = ["util"] }
+tracing = "0.1.44"
+
+[dev-dependencies]
+libra-config.workspace = true
+libra-log-capture.workspace = true
+http = "1.5.0"
+http-body-util = "0.1.5"
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+toml = "1.1.8"
+
+[lints]
+workspace = true

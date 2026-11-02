@@ -1,0 +1,102 @@
+# Licence policy gate. In Libra this is legally load-bearing rather than hygienic: the proprietary
+# Libra Pro is built on the code in this repository, so a copyleft dependency here would reach it
+# and be incompatible with how it is distributed.
+#
+# The allow list is permissive only: the intersection of licences that are both EUPL-redistributable
+# and safe to relicense into proprietary work. Strong copyleft (GPL, AGPL, SSPL) and weak or
+# file-level copyleft (MPL-2.0, LGPL) are left off on purpose, so a dependency carrying one fails
+# the build and reaches a legal review instead of shipping unnoticed. Third-party EUPL crates are
+# copyleft to us as well, and are not covered by Libra's own EUPL entry below.
+#
+# A crate whose licence is not on the allow list but is still permissive gets an explicit
+# [[licenses.exceptions]] entry, with the reason stated, so the exception stays scoped to that one
+# crate instead of widening the list.
+
+[graph]
+all-features = true
+
+[licenses]
+confidence-threshold = 0.93
+allow = [
+    # General permissive licences
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    # Libra's own licence
+    "EUPL-1.2",
+]
+
+# CDLA-Permissive-2.0 covers data, not code: this crate is the Mozilla root certificate bundle,
+# reached through the HTTPS client that fetches remote contexts. Permissive, no copyleft, and no
+# obligation on our own source.
+[[licenses.exceptions]]
+name = "webpki-root-certs"
+allow = ["CDLA-Permissive-2.0"]
+
+# Same bundle, same licence, different packaging: `webpki-roots` is the rustls-shaped form of the
+# Mozilla root store, reached through `libra-proxy`'s HTTPS client to the broker. Compiled-in roots
+# rather than the host trust store, so a container image does not need a CA bundle installed for
+# Libra to verify an https broker. CDLA-Permissive-2.0 covers data, imposes nothing on our source,
+# and is not copyleft.
+#
+# Note: cargo-deny 0.20.2 filters this crate out of its graph, so the exception may report as
+# unencountered (a warning, not a failure). It is here so a version that does see it does not fail
+# the licence gate.
+[[licenses.exceptions]]
+name = "webpki-roots"
+allow = ["CDLA-Permissive-2.0"]
+
+# Apache-2.0 with the LLVM exception, which only waives Apache-2.0 conditions for code compiled into
+# a binary; it adds no obligation. The crate is a build dependency of `psm`, reached through
+# jstrict -> stacker -> psm, and writes the archive `psm`'s build script links: nothing of it ships.
+[[licenses.exceptions]]
+name = "ar_archive_writer"
+allow = ["Apache-2.0 WITH LLVM-exception"]
+
+[advisories]
+db-urls = ["https://github.com/rustsec/advisory-db"]
+yanked = "deny"
+# Every entry states what it is, why it is tolerable, and what would let it be removed.
+#
+# The first is an "unmaintained" advisory rather than a vulnerability. `proc-macro-error` is a
+# build-time dependency of `static-automata-macros`, reached through jsonld -> jsonld-core ->
+# langtag -> static-automata. It runs inside the compiler and does not ship in the binary. Exit
+# condition: upstream moving `static-automata` off it. Re-check on every bump.
+#
+# The last is a real vulnerability, and is here because it is not reachable from anything Libra
+# ships. Read its reason before adding another of that kind.
+ignore = [
+    { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained. Build-time only, via static-automata-macros under langtag; it does not ship in the binary." },
+
+    # A real vulnerability, tolerated only because the code it affects is not in anything Libra
+    # ships. The Marvin attack recovers an RSA *private* key by timing that key's operations. Libra
+    # holds no RSA private key: it verifies signatures with public keys fetched from a JWKS, and
+    # `jsonwebtoken` is built against `aws_lc_rs` precisely so that `rsa` is absent from the
+    # production graph: `cargo tree --package libra --edges normal,build` finds no `rsa` at all.
+    # What is left is a dev-dependency that mints a throwaway key so the token-validator tests can
+    # sign a fixture, in a binary that is never network-reachable and never sees a real key.
+    #
+    # Exit condition: mint the test fixture with `aws-lc-rs` instead and drop the dev-dependency,
+    # which also removes a release-candidate crate (`rsa 0.10.0-rc.18`) from the tree. If `rsa` ever
+    # reappears in the production graph, this entry must be deleted rather than widened.
+    { id = "RUSTSEC-2023-0071", reason = "rsa Marvin attack. Not in the production graph: jsonwebtoken uses aws_lc_rs. Remaining use is a dev-dependency minting a throwaway key for test fixtures, with no private key and no network." },
+]
+
+[bans]
+# Duplicate versions are hygiene, not a licensing or security concern, and they appear and disappear
+# with upstream releases. Warn so they stay visible without turning an upstream bump into a red build.
+multiple-versions = "warn"
+# Every wildcard in this workspace is an internal crate depending on a sibling by path, which Cargo
+# records as a wildcard version. Every crate is `publish = false`, which is what lets
+# allow-wildcard-paths exempt those, so any wildcard left is a registry dependency and refused.
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

@@ -1,0 +1,29 @@
+[package]
+name = "libra-jsonld-term-expansion"
+description = "Term to IRI expansion and IRI to term compaction for NGSI-LD names"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# Pinned exactly: the crate makes no compatibility promise before 1.0.
+# `ahash` because request contexts are attacker-supplied and the default hasher is not
+# hash-flooding resistant.
+derive_more = { version = "2.1.1", features = ["display"] }
+futures = "0.3.34"
+iri-rs = { version = "3.4.1", features = ["static"] }
+jsonld = { version = "=0.26.0", features = ["ahash"] }
+jstrict = "0.16.0"
+rdfx = "0.24.0"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+serde_json = "1.0.154"
+
+[lints]
+workspace = true

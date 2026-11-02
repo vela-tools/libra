@@ -1,0 +1,6 @@
+# `.git` stays in the context: the build reads the commit it reports from it, and fails without it.
+.claude/
+.github/
+docs/
+target/
+rust-toolchain.toml

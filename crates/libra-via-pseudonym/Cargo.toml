@@ -1,0 +1,21 @@
+[package]
+name = "libra-via-pseudonym"
+description = "A validated RFC 9110 Via pseudonym, shared by the configuration and the proxy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+http = "1.5.0"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+toml = "1.1.8"
+
+[lints]
+workspace = true

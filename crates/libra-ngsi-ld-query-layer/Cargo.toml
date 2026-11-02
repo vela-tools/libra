@@ -1,0 +1,23 @@
+[package]
+name = "libra-ngsi-ld-query-layer"
+description = "Parses a request's NGSI-LD query parameters once and places them in request extensions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-ngsi-ld-query.workspace = true
+libra-problem-details.workspace = true
+axum = "0.8.9"
+thiserror = "2.0.21"
+tower = { version = "0.5.3", features = ["util"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+
+[lints]
+workspace = true

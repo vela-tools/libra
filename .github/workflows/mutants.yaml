@@ -1,0 +1,68 @@
+name: mutants
+
+# A pull request is held to every mutant in the code it changes, so a change to the enforcement
+# path lands with the tests that notice it breaking. The weekly run covers the whole configured
+# path, which also catches a mutant that survives because a test elsewhere was weakened. The
+# crates examined are listed in the mutants configuration; `--workspace` lets that list reach past
+# the root package, which is all cargo-mutants mutates otherwise. A surviving mutant fails the job.
+on:
+  pull_request:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: mutants-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  in-diff:
+    name: cargo mutants on the changed code
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - run: rustup toolchain install
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants,cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+      - run: git diff "origin/${{ github.base_ref }}...HEAD" > "$RUNNER_TEMP/pr.diff"
+      - run: cargo mutants --workspace --no-shuffle --jobs 2 --in-diff "$RUNNER_TEMP/pr.diff" -- --locked
+      - name: Mutants report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mutants-in-diff
+          path: mutants.out
+
+  # The whole path in eight shards. The tests run once beforehand, so each shard skips its own
+  # baseline.
+  full:
+    name: cargo mutants shard ${{ matrix.shard }}
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants,cargo-nextest
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace --all-features --locked
+      - run: cargo mutants --workspace --no-shuffle --jobs 2 --baseline=skip --shard ${{ matrix.shard }}/8 -- --locked
+      - name: Mutants report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mutants-shard-${{ matrix.shard }}
+          path: mutants.out

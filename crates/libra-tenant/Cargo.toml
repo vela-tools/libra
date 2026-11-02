@@ -1,0 +1,22 @@
+[package]
+name = "libra-tenant"
+description = "Resolving the tenant a request is for, and what to do when it names none"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+libra-config.workspace = true
+libra-policy-model.workspace = true
+http = "1.5.0"
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[lints]
+workspace = true

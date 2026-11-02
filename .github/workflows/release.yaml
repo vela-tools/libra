@@ -1,0 +1,94 @@
+name: release
+
+# Libra ships as a container image and nothing else, so a release is the image plus a GitHub release
+# that names it. No binary archives are published.
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/vela-tools/libra
+
+jobs:
+  # docker.yaml runs the same gates as a pull request before it builds, so nothing is published from
+  # a tag whose commit does not pass them.
+  image:
+    permissions:
+      artifact-metadata: write
+      attestations: write
+      contents: read
+      id-token: write
+      packages: write
+    uses: ./.github/workflows/docker.yaml
+
+  release:
+    needs: image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes
+        id: changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --current --strip all
+
+      - name: Determine release type
+        id: release_type
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            echo "makeLatest=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "makeLatest=true" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compose release body
+        env:
+          NOTES: ${{ steps.changelog.outputs.content }}
+          DIGEST: ${{ needs.image.outputs.digest }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$DIGEST" ]]; then
+            echo "the image job returned no digest" >&2
+            exit 1
+          fi
+          printf '%s\n\n' "$NOTES" > release-body.md
+          {
+            echo "## Image"
+            echo
+            echo '```sh'
+            echo "docker pull ${IMAGE}:${GITHUB_REF_NAME}"
+            echo '```'
+            echo
+            echo "Multi-platform (\`linux/amd64\`, \`linux/arm64\`), digest \`${DIGEST}\`. Signed with cosign and carrying a build provenance attestation:"
+            echo
+            echo '```sh'
+            echo "gh attestation verify oci://${IMAGE}:${GITHUB_REF_NAME} --repo ${GITHUB_REPOSITORY}"
+            echo '```'
+          } >> release-body.md
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: ${{ steps.release_type.outputs.makeLatest }}
+          prerelease: ${{ steps.release_type.outputs.prerelease }}
+          name: ${{ github.ref_name }}
+          bodyFile: release-body.md
+          token: ${{ secrets.GITHUB_TOKEN }}

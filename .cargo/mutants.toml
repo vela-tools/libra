@@ -1,0 +1,33 @@
+# Mutation testing covers the crates that decide and enforce access: a mutant that survives there
+# is a change to who sees what that no test notices. Each mutant is tested against its own crate's
+# tests, so every crate's tests have to hold its own behaviour.
+examine_globs = [
+    "crates/libra-enforcement-aggregation/src/**/*.rs",
+    "crates/libra-enforcement-attribute/src/**/*.rs",
+    "crates/libra-enforcement-member/src/**/*.rs",
+    "crates/libra-enforcement-scope/src/**/*.rs",
+    "crates/libra-enforcement-time/src/**/*.rs",
+    "crates/libra-enforcement-type/src/**/*.rs",
+    "crates/libra-policy-engine/src/**/*.rs",
+    "crates/libra-policy-layer/src/**/*.rs",
+    # The policy vocabulary the engine decides with: whether a caller is authenticated, what a
+    # restriction allows, and the names copied into scope filters and broker headers.
+    "crates/libra-policy-model/src/**/*.rs",
+    # The status a refusal answers with: a hidden resource that answers 403 where an absent one
+    # answers 404 tells the caller it exists.
+    "crates/libra-problem-details/src/**/*.rs",
+    "crates/libra-registration-disclosure/src/**/*.rs",
+]
+
+# Each mutant is a rebuild and a test run, so both are made cheaper: the `mutants` profile in the
+# root manifest builds without debug information, and nextest runs the test binaries in parallel.
+# nextest runs no doctests, and the examined crates have none.
+profile = "mutants"
+test_tool = "nextest"
+
+# Equivalent mutants, which change no behaviour and so no test can fail on.
+exclude_re = [
+    # Each layer's `poll_ready` already answers `Poll::Ready(Ok(()))`, the replacement this mutant
+    # writes: the inner service's readiness is driven by `oneshot` on the clone that serves the call.
+    'poll_ready -> Poll<Result<\(\), Self::Error>> with Poll::from\(Ok\(\(\)\)\)',
+]
