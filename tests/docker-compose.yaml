@@ -15,7 +15,7 @@ services:
     #
     # Both upstream images are published for amd64 only, so the platform is named: an arm64 host then
     # runs them under emulation rather than refusing a manifest with no matching platform.
-    image: docker.io/postgis/postgis@sha256:01a6a70e41e6c4467c8f55f6063555ed72db2d6662cd0d571040d42eadaeb6f6
+    image: docker.io/postgis/postgis@sha256:4a43e3c3e5d55b9208240fc71db543b79c638766280c625a425bd0a2390989c4
     platform: linux/amd64
     # The suite gives every test a tenant of its own, and the broker opens a connection pool per tenant
     # and never closes it. With the default limit of 100 connections the later tests fail with "too many
