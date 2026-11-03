@@ -1,0 +1,63 @@
+name: Performance report
+description: Libra answers correctly, but too slowly or using too much memory.
+labels: [performance]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not use this form to report a security vulnerability. A request that exhausts Libra's memory or stalls it for other callers is a vulnerability: follow the [Libra security policy](https://github.com/vela-tools/libra/security/policy) instead.
+
+        Fill in what you know now. Every field becomes a heading, so the body is edited in place as understanding grows. Triage adds one `area:` label.
+  - type: textarea
+    id: workload
+    attributes:
+      label: Workload
+      description: "What ran: request mix, entity and response sizes, clients, the policies in effect, configuration, and whether the host was shared."
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: Measurement
+      description: "The figures, through Libra and against the broker directly: latency percentiles, throughput, memory, a profile excerpt."
+    validations:
+      required: true
+  - type: textarea
+    id: target
+    attributes:
+      label: Target
+      description: Optional; triage completes it. One checkbox per figure that counts as fixed, with the conditions it holds under.
+      value: "- [ ] "
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `libra --version`.
+    validations:
+      required: true
+  - type: input
+    id: broker
+    attributes:
+      label: Broker
+      description: The context broker and its version behind Libra.
+      placeholder: Scorpio, with the version it reports
+    validations:
+      required: true
+  - type: textarea
+    id: leads
+    attributes:
+      label: Leads
+      description: Suspected cause or where to look. A hypothesis, not a plan.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: "This is not a security vulnerability. Vulnerabilities are reported privately, following the [Libra security policy](https://github.com/vela-tools/libra/security/policy)."
+          required: true
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true

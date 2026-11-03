@@ -1,7 +1,6 @@
 name: Help and questions
 description: Ask how to accomplish something with Libra.
 title: "[Help]: "
-labels: ["question"]
 body:
   - type: markdown
     attributes:

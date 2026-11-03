@@ -1,24 +1,39 @@
 name: Feature request
-description: Suggest a new capability, a new kind of restriction, or an improvement.
-title: "[Feature]: "
-labels: ["enhancement"]
+description: A capability Libra lacks, such as a policy condition, a kind of restriction, a setting or an endpoint.
+labels: [feature]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the suggestion. Please search the existing issues first, in case it is already proposed.
-  - type: textarea
-    id: problem
+        Do not use this form to report a security vulnerability. Follow the [Libra security policy](https://github.com/vela-tools/libra/security/policy) instead.
+
+        Fill in what you know now. Every field becomes a heading, so the body is edited in place as understanding grows. Triage adds one `area:` label.
+  - type: dropdown
+    id: origin
     attributes:
-      label: Problem or motivation
-      description: What access rule are you trying to express or enforce, and what is missing or awkward today? Describe the need, not just the fix.
+      label: Origin
+      description: Where the capability belongs.
+      options:
+        - Policy language
+        - Enforcement of a restriction
+        - Authentication
+        - Configuration, management API or CLI
+        - NGSI-LD or JSON-LD coverage
+        - Observability or audit
     validations:
       required: true
   - type: textarea
-    id: solution
+    id: need
     attributes:
-      label: Proposed solution
-      description: What should Libra do? If it affects the policy language, the configuration, authentication, or the CLI, say where.
+      label: Need
+      description: "What access rule you are trying to express or enforce, or what an operator cannot do today. Describe the need, not just the fix."
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: Behaviour
+      description: "The visible contract: policy keys, configuration keys and their values, wire shapes, defaults, and the clause if the specification defines it."
     validations:
       required: true
   - type: textarea
@@ -29,19 +44,18 @@ body:
     validations:
       required: false
   - type: textarea
-    id: references
+    id: scope
     attributes:
-      label: Specification references
-      description: >-
-        Anything that pins down the expected behaviour: an ETSI GS CIM 009 v1.9.1 clause, an RFC, or
-        how a specific broker behaves.
+      label: Out of scope
+      description: What this issue deliberately does not cover.
     validations:
       required: false
   - type: textarea
-    id: context
+    id: acceptance
     attributes:
-      label: Additional context
-      description: Example policies, requests, links, or anything else that helps.
+      label: Acceptance
+      description: "Optional; triage completes it. One checkbox per observable check: the input or situation, and the result that must hold."
+      value: "- [ ] "
     validations:
       required: false
   - type: checkboxes

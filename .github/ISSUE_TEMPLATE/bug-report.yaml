@@ -1,39 +1,36 @@
 name: Bug report
-description: Report incorrect behaviour, a crash, or an NGSI-LD request or response Libra handles against the specification.
-title: "[Bug]: "
-labels: ["bug"]
+description: Broken on its own terms, with no spec clause at stake.
+labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to file a bug. Please search the existing issues first, in case it is already reported.
-
         Do not use this form to report a security vulnerability. A policy that allows more than it says, a response carrying data a restriction should have removed, or a credential reaching the broker is a vulnerability. Follow the [Libra security policy](https://github.com/vela-tools/libra/security/policy) instead.
+
+        Fill in what you know now. Every field becomes a heading, so the body is edited in place as understanding grows. Triage adds one `area:` label.
   - type: textarea
-    id: summary
+    id: observed
     attributes:
-      label: What happened?
-      description: A clear description of the incorrect behaviour, including the exact status code and problem details body if there was one.
+      label: Observed
+      description: What happened (a crash, a refusal to start, a wrong status, a wrong body), with the status code, the problem details body and the log lines that show it.
       placeholder: Libra answered 400 to ..., or refused to start with ...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest configuration, policy and request that trigger it. Say how often it reproduces.
+      placeholder: |
+        1. Policy: ...
+        2. curl -s "localhost:5667/ngsi-ld/v1/entities?type=..." -H ...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: What did you expect to happen?
-      description: >-
-        Describe the correct behaviour. If this is a spec-compliance issue, cite the ETSI GS CIM 009
-        v1.9.1 clause, or the RFC, it violates.
-    validations:
-      required: true
-  - type: textarea
-    id: reproduce
-    attributes:
-      label: Steps to reproduce
-      description: The smallest configuration, policy and request that trigger it.
-      placeholder: |
-        1. Policy: ...
-        2. curl -s "localhost:5667/ngsi-ld/v1/entities?type=..." -H ...
+      label: Expected
+      description: "What should have happened and what says so: Libra's documentation or an invariant. If an ETSI GS CIM 009 or JSON-LD clause decides it, use the Conformance report form instead."
     validations:
       required: true
   - type: input
@@ -57,6 +54,21 @@ body:
       label: Configuration, policies, and logs
       description: Relevant sections and log lines. Remove API keys, tokens, key store contents, and tenant data first.
       render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      description: "Optional; triage completes it. One checkbox per observable check: the input or situation, and the result that must hold. A reviewer can verify each one without reading the code."
+      value: "- [ ] "
+    validations:
+      required: false
+  - type: textarea
+    id: leads
+    attributes:
+      label: Leads
+      description: Suspected cause or where to look. A hypothesis, not a plan.
     validations:
       required: false
   - type: checkboxes

@@ -1,0 +1,81 @@
+name: Conformance report
+description: Libra contradicts ETSI GS CIM 009 v1.9.1 or JSON-LD 1.1, or changes what the broker behind it answers.
+labels: [conformance]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not use this form to report a security vulnerability. If a restriction applies and the response carries more than it allows, that is a vulnerability: follow the [Libra security policy](https://github.com/vela-tools/libra/security/policy) instead.
+
+        This form is for the opposite case: Libra refuses, rewrites or misreads something the specification allows, or answers differently from the broker when no restriction is at stake. Fill in what you know now. Every field becomes a heading, so the body is edited in place as understanding grows. Triage adds one `area:` label.
+  - type: textarea
+    id: request
+    attributes:
+      label: Request
+      description: The request sent through Libra, trimmed to what shows the deviation, and the policy that applied to it.
+      placeholder: "curl -i 'localhost:5667/ngsi-ld/v1/entities?type=Vehicle&q=speed>40' -H 'Authorization: Bearer ...'"
+    validations:
+      required: true
+  - type: textarea
+    id: response
+    attributes:
+      label: Response
+      description: "What Libra answered: the status, the headers and body that matter, and the problem details body if there was one."
+    validations:
+      required: true
+  - type: textarea
+    id: direct
+    attributes:
+      label: Broker response
+      description: The same request sent to the broker directly, and what it answered. Leave it empty if the request never reaches the broker.
+    validations:
+      required: false
+  - type: textarea
+    id: clause
+    attributes:
+      label: Clause
+      description: The clause that decides the expected behaviour, by number, and what it requires. Quote the sentence when the reading is not obvious.
+      placeholder: ETSI GS CIM 009 v1.9.1 clause 4.9 ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The output of `libra --version`.
+    validations:
+      required: true
+  - type: input
+    id: broker
+    attributes:
+      label: Broker
+      description: The context broker and its version behind Libra.
+      placeholder: Scorpio, with the version it reports
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      description: "Optional; triage completes it. One checkbox per observable check: the input or situation, and the result that must hold."
+      value: "- [ ] "
+    validations:
+      required: false
+  - type: textarea
+    id: leads
+    attributes:
+      label: Leads
+      description: Suspected cause or where to look. A hypothesis, not a plan.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: "This is not a security vulnerability. Vulnerabilities are reported privately, following the [Libra security policy](https://github.com/vela-tools/libra/security/policy)."
+          required: true
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I removed any credentials or private data from the report and samples above.
+          required: true
