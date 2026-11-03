@@ -91,7 +91,6 @@ libra-json-body = { path = "crates/libra-json-body" }
 libra-jsonld-context = { path = "crates/libra-jsonld-context" }
 libra-jsonld-context-layer = { path = "crates/libra-jsonld-context-layer" }
 libra-jsonld-term-expansion = { path = "crates/libra-jsonld-term-expansion" }
-libra-kebab-name = { path = "crates/libra-kebab-name" }
 libra-linked-entity-layer = { path = "crates/libra-linked-entity-layer" }
 libra-log-capture = { path = "crates/libra-log-capture" }
 libra-logging = { path = "crates/libra-logging" }

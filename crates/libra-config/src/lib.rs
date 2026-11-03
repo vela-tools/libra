@@ -4,8 +4,8 @@
 //! variables. One module per `[section]` of that file, named after the section so the mapping from
 //! a deployed `libra.toml` to the type that reads it is mechanical.
 //!
-//! This crate is a leaf: it depends on nothing else in the workspace except `libra-kebab-name` and
-//! `libra-via-pseudonym`, which are themselves leaves, and models no domain behaviour. Values that
+//! This crate is a leaf: it depends on nothing else in the workspace except `libra-via-pseudonym`,
+//! which is itself a leaf, and models no domain behaviour. Values that
 //! mean something to another crate (the default policy effect, the JWT signing algorithm) are
 //! declared here as plain configuration enums and converted by the crate that owns the concept.
 //! A value that is a URL, a path, or an HTTP method is read straight into its type, so a file that

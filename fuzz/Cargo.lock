@@ -1723,7 +1723,6 @@ dependencies = [
  "hex",
  "http",
  "libra-forwarding",
- "libra-kebab-name",
  "libra-policy-model",
  "libra-via-pseudonym",
  "serde",
@@ -1951,15 +1950,6 @@ dependencies = [
  "jsonld",
  "jstrict",
  "rdfx",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "libra-kebab-name"
-version = "1.0.0-beta.1"
-dependencies = [
- "derive_more",
  "serde",
  "thiserror 2.0.21",
 ]
