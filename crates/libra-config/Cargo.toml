@@ -10,10 +10,9 @@ publish.workspace = true
 
 [dependencies]
 libra-forwarding.workspace = true
-libra-kebab-name.workspace = true
 libra-policy-model.workspace = true
 libra-via-pseudonym.workspace = true
-derive_more = { version = "2.1.1", features = ["debug", "display"] }
+derive_more = { version = "2.1.1", features = ["debug", "display", "into"] }
 figment2 = { version = "0.11.5", features = ["toml", "env"] }
 hex = "0.4.3"
 http = "1.5.0"
