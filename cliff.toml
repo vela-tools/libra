@@ -4,8 +4,6 @@ header = """
 
 All notable changes to this project will be documented in this file.\n
 """
-# Each group name starts with an HTML comment holding its sort key, because git-cliff orders groups
-# alphabetically; `striptags` removes the key from the rendered heading.
 body = """
 {% if version %}\
 ## [{{ version }}] - {{ timestamp | date(format="%Y-%m-%d") }}
@@ -13,9 +11,9 @@ body = """
 ## [Unreleased]
 {% endif %}
 {% for group, commits in commits | group_by(attribute="group") %}\
-### {{ group | striptags | trim }}
+### {{ group }}
 {% for commit in commits %}\
-- {% if commit.scope %}`{{ commit.scope }}`: {% endif %}{{ commit.message }}{% if commit.breaking %} **BREAKING**{% endif %}
+- {% if commit.scope %}`{{ commit.scope }}` — {% endif %}{{ commit.message }}{% if commit.breaking %} ⚠️ **BREAKING**{% endif %}
 {% endfor %}
 {% endfor %}\
 """
@@ -33,16 +31,16 @@ skip_tags = ""
 ignore_tags = ""
 sort_commits = "newest"
 commit_parsers = [
-    { message = "^feat", group = "<!-- 00 -->Features" },
-    { message = "^fix", group = "<!-- 01 -->Bug Fixes" },
-    { message = "^perf", group = "<!-- 02 -->Performance" },
-    { message = "^refactor", group = "<!-- 03 -->Refactor" },
-    { message = "^style", group = "<!-- 04 -->Style" },
-    { message = "^test", group = "<!-- 05 -->Tests" },
-    { message = "^docs?", group = "<!-- 06 -->Documentation" },
-    { message = "^build", group = "<!-- 07 -->Build" },
-    { message = "^ci", group = "<!-- 08 -->CI" },
+    { message = "^feat", group = "🚀 Features" },
+    { message = "^fix", group = "🐛 Bug Fixes" },
+    { message = "^perf", group = "⚡ Performance" },
+    { message = "^refactor", group = "🔧 Refactor" },
+    { message = "^style", group = "🎨 Style" },
+    { message = "^test", group = "🧪 Tests" },
+    { message = "^docs?", group = "📚 Documentation" },
+    { message = "^build", group = "🏗️ Build" },
+    { message = "^ci", group = "👷 CI" },
     { message = "^chore\\(release\\)", skip = true },
-    { message = "^chore", group = "<!-- 09 -->Chores" },
-    { message = ".*", group = "<!-- 10 -->Other" },
+    { message = "^chore", group = "🧹 Chores" },
+    { message = ".*", group = "💡 Other" },
 ]
