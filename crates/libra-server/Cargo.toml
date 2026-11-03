@@ -33,7 +33,6 @@ libra-linked-entity-layer.workspace = true
 libra-logging.workspace = true
 libra-management-auth.workspace = true
 libra-metrics.workspace = true
-libra-ngsi-ld-operation.workspace = true
 libra-ngsi-ld-operation-layer.workspace = true
 libra-ngsi-ld-query-layer.workspace = true
 libra-ngsi-ld-representation-layer.workspace = true
