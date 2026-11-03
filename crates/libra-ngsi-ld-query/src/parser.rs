@@ -457,6 +457,14 @@ mod tests {
     }
 
     #[test]
+    fn an_absolute_iri_path_renders_without_escaping_its_dots() {
+        // Found by the q_filter fuzz target: each round trip added a backslash before every dot.
+        for source in ["https://uri.etsi.org/ngsi-ldes\"", "https://example.test/speed>40", "urn:a.b==1"] {
+            assert_eq!(parse(source).to_string(), source, "{source} should render as it was written");
+        }
+    }
+
+    #[test]
     fn a_linked_path_renders_as_it_was_written() {
         for source in ["sensor{humidity}>40", "a{B,C:d{e.f[g]}}", "a;b{c}|d"] {
             assert_eq!(parse(source).to_string(), source, "{source} should render as it was written");
