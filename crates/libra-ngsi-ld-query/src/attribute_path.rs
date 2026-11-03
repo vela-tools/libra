@@ -74,21 +74,7 @@ impl AttributePath {
 
 impl Display for AttributePath {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> FmtResult {
-        match self.segments.as_slice() {
-            // A path headed by an absolute IRI is read whole and never split on its dots (see
-            // `split_segments`), so it is written as it is: escaping its dots would add a backslash
-            // on every round trip and forward an IRI the broker does not know.
-            [only] if only.looks_absolute() => formatter.write_str(only.as_str())?,
-            segments => {
-                for (index, segment) in segments.iter().enumerate() {
-                    if index > 0 {
-                        formatter.write_str(".")?;
-                    }
-                    // A literal dot inside a name is escaped, so rendering round-trips through parsing.
-                    formatter.write_str(&segment.as_str().replace('.', "\\."))?;
-                }
-            }
-        }
+        write_segments(formatter, &self.segments)?;
 
         if let Some(trailing) = &self.trailing {
             write!(formatter, "[{trailing}]")?;
@@ -146,6 +132,29 @@ pub(crate) fn split_segments(raw: &str) -> Vec<Term> {
     }
 
     unescaped.split('.').map(|segment| Term::new(segment.replace('\u{0}', "."))).collect()
+}
+
+/// Writes segments back as the raw path [`split_segments`] reads them from.
+///
+/// A path that is one absolute IRI is read whole and never split on its dots, so it is written as
+/// it is: escaping its dots would add a backslash on every round trip and forward an IRI the broker
+/// does not know. Any other path escapes a literal dot inside a name, so rendering round-trips
+/// through parsing.
+pub(crate) fn write_segments(formatter: &mut Formatter<'_>, segments: &[Term]) -> FmtResult {
+    if let [only] = segments
+        && only.looks_absolute()
+    {
+        return formatter.write_str(only.as_str());
+    }
+
+    for (index, segment) in segments.iter().enumerate() {
+        if index > 0 {
+            formatter.write_str(".")?;
+        }
+        formatter.write_str(&segment.as_str().replace('.', "\\."))?;
+    }
+
+    Ok(())
 }
 
 /// An attribute path after expansion.

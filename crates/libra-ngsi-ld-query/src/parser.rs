@@ -459,7 +459,15 @@ mod tests {
     #[test]
     fn an_absolute_iri_path_renders_without_escaping_its_dots() {
         // Found by the q_filter fuzz target: each round trip added a backslash before every dot.
-        for source in ["https://uri.etsi.org/ngsi-ldes\"", "https://example.test/speed>40", "urn:a.b==1"] {
+        // The same holds for an IRI that names the Relationship of a linked-entity path.
+        let sources = [
+            "https://uri.etsi.org/ngsi-ldes\"",
+            "https://example.test/speed>40",
+            "urn:a.b==1",
+            "https://example.test/a...b{c}",
+            "https://example.test/rel.x{urn:a.b{speed}}>40",
+        ];
+        for source in sources {
             assert_eq!(parse(source).to_string(), source, "{source} should render as it was written");
         }
     }

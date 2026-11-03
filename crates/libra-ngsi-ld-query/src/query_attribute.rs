@@ -14,7 +14,7 @@
 //! lets an enforcement layer refuse it for a caller whose restriction does not reach those entities.
 
 use crate::{
-    attribute_path::{AttributePath, ExpandedAttributePath},
+    attribute_path::{AttributePath, ExpandedAttributePath, write_segments},
     error::QueryError,
     expansion::expand_term,
     parameter_name::ParameterName,
@@ -23,7 +23,10 @@ use libra_jsonld_term_expansion::{
     name::{ExpandedIri, Term},
     resolved::ResolvedContext,
 };
-use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::{
+    fmt::{Display, Formatter, Result as FmtResult},
+    slice,
+};
 
 /// The attribute a `q` term tests, as authored.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -146,8 +149,9 @@ impl Display for QueryAttribute {
         match self {
             Self::Value(path) => write!(formatter, "{path}"),
             Self::Linked(linked) => {
-                // Escaped as a path segment is, so rendering round-trips through parsing.
-                write!(formatter, "{}{{", linked.relationship.as_str().replace('.', "\\."))?;
+                // Read as a one-segment path, so written as one.
+                write_segments(formatter, slice::from_ref(&linked.relationship))?;
+                formatter.write_str("{")?;
                 write_entity_types(formatter, linked.entity_types.iter().map(Term::as_str))?;
                 write!(formatter, "{}}}", linked.target)
             }
