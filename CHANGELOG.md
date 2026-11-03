@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### 🐛 Bug Fixes
+- render absolute iri relationship names without escaping dots
 - render absolute iri paths without escaping dots
 
 ### 👷 CI
@@ -12,6 +13,9 @@ All notable changes to this project will be documented in this file.
 - add cargo machete workflow
 - drop dependabot docker-compose updates
 - re-enable fuzz workflow
+
+### 🔧 Refactor
+- fold name validation into config section name
 
 ### 🧹 Chores
 - sync cliff configuration with cassiopeia
