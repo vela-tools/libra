@@ -74,12 +74,20 @@ impl AttributePath {
 
 impl Display for AttributePath {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> FmtResult {
-        for (index, segment) in self.segments.iter().enumerate() {
-            if index > 0 {
-                formatter.write_str(".")?;
+        match self.segments.as_slice() {
+            // A path headed by an absolute IRI is read whole and never split on its dots (see
+            // `split_segments`), so it is written as it is: escaping its dots would add a backslash
+            // on every round trip and forward an IRI the broker does not know.
+            [only] if only.looks_absolute() => formatter.write_str(only.as_str())?,
+            segments => {
+                for (index, segment) in segments.iter().enumerate() {
+                    if index > 0 {
+                        formatter.write_str(".")?;
+                    }
+                    // A literal dot inside a name is escaped, so rendering round-trips through parsing.
+                    formatter.write_str(&segment.as_str().replace('.', "\\."))?;
+                }
             }
-            // A literal dot inside a name is escaped, so rendering round-trips through parsing.
-            formatter.write_str(&segment.as_str().replace('.', "\\."))?;
         }
 
         if let Some(trailing) = &self.trailing {
