@@ -46,15 +46,39 @@ jobs:
           config: cliff.toml
           args: --current --strip all
 
+      # Until the first stable release, the newest pre-release is published as a full release and
+      # made latest, so the repository sidebar shows it; docker.yaml tags its image `latest` by the
+      # same rule. Once a stable release exists, pre-releases are pre-releases and latest follows
+      # stable releases only. A failed lookup fails the job rather than guessing.
       - name: Determine release type
         id: release_type
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
-            echo "makeLatest=false" >> "$GITHUB_OUTPUT"
-            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [[ "${GITHUB_REF_NAME}" != *-* ]]; then
+            latest=true
           else
+            stable=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/git/matching-refs/tags/v" \
+              --jq '.[].ref | select(test("^refs/tags/v[0-9]+\\.[0-9]+\\.[0-9]+$"))')
+            if [[ -z "$stable" ]]; then
+              latest=true
+            else
+              latest=false
+            fi
+          fi
+          if [[ "$latest" == true ]]; then
             echo "makeLatest=true" >> "$GITHUB_OUTPUT"
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "makeLatest=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+          # A pre-release made latest takes over from the one before it, which is demoted below.
+          if [[ "$latest" == true && "${GITHUB_REF_NAME}" == *-* ]]; then
+            echo "demote=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "demote=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Compose release body
@@ -92,3 +116,19 @@ jobs:
           name: ${{ github.ref_name }}
           bodyFile: release-body.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Before the first stable release, the pre-release that was latest until now was published as
+      # a full release. It goes back to being a pre-release, so only the newest one stands as a
+      # release. This runs after the new release is latest, so there is never a moment without one.
+      - name: Mark earlier releases as pre-releases
+        if: steps.release_type.outputs.demote == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 \
+            --json tagName,isPrerelease,isDraft \
+            --jq ".[] | select(.isPrerelease | not) | select(.isDraft | not) | select(.tagName != \"${GITHUB_REF_NAME}\") | .tagName" |
+            while read -r tag; do
+              gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --prerelease --latest=false
+            done
