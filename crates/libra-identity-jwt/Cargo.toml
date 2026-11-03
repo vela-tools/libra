@@ -14,7 +14,6 @@ libra-identity-authenticator.workspace = true
 libra-identity-claims.workspace = true
 libra-identity-jwks.workspace = true
 libra-policy-model.workspace = true
-derive_more = { version = "2.1.1", features = ["debug", "from"] }
 jsonwebtoken = { version = "11.1.0", features = ["aws_lc_rs"] }
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror = "2.0.21"
