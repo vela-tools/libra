@@ -150,7 +150,7 @@ What an operator has to do with this section comes down to one list: every conte
 | --- | --- | --- |
 | `policy` | `"authenticate"` | `require-header`, `authenticate`, or `allow-public` |
 
-This decides only what happens to a request that names **no** tenant. `require-header` refuses it. `authenticate` serves the default tenant to an authenticated caller. `allow-public` serves it to anyone, anonymous callers included. Under `allow-public`, a policy that names no `users`, `principals`, `groups` or `roles` applies to an anonymous caller too, so it is never the default. A request that names a tenant always authenticates, whatever this says. An empty `NGSILD-Tenant` header is refused outright, and so is a repeated one.
+This decides only what happens to a request that names **no** tenant. `require-header` refuses it. `authenticate` serves the default tenant to an authenticated caller. `allow-public` serves it to anyone, anonymous callers included. Under `allow-public`, a policy that names no `users`, `principals`, `groups` or `roles` applies to an anonymous caller too, unless it says `callers = "authenticated"`, so it is never the default. A request that names a tenant always authenticates, whatever this says. An empty `NGSILD-Tenant` header is refused outright, and so is a repeated one.
 
 ## `[management-api]`
 

@@ -456,6 +456,58 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn an_anonymous_caller_beside_an_identity_condition_is_refused() {
+        // An anonymous caller has no name to match, so the policy reads as though it allows alice
+        // and allows nobody.
+        let never = r#"
+            [[policy]]
+            id = "anonymous-alice"
+            priority = 10
+
+            [policy.condition]
+            callers = "anonymous"
+            users = ["alice"]
+
+            [policy.access]
+            effect = "allow"
+        "#;
+
+        let refused = load(&[("never.toml", never)]).await;
+
+        assert!(
+            matches!(&refused, Err(PolicyStoreError::Unsatisfiable { path, .. }) if path.ends_with("never.toml")),
+            "{refused:?}"
+        );
+    }
+
+    #[tokio::test]
+    async fn an_unknown_kind_of_caller_names_the_file_the_line_and_the_key() {
+        let everyone = r#"
+[[policy]]
+id = "everyone"
+priority = 10
+
+[policy.condition]
+callers = "everyone"
+
+[policy.access]
+effect = "allow"
+"#;
+
+        let refused = load(&[("everyone.toml", everyone)]).await;
+
+        let Err(PolicyStoreError::Malformed { path, source }) = &refused else {
+            panic!("expected a parse failure naming the file, got {refused:?}");
+        };
+        let message = source.to_string();
+
+        assert!(path.ends_with("everyone.toml"));
+        assert!(message.contains("line 7"), "{message}");
+        assert!(message.contains("callers = \"everyone\""), "{message}");
+        assert!(message.contains("`anonymous`") && message.contains("`authenticated`"), "{message}");
+    }
+
+    #[tokio::test]
     async fn a_term_the_declared_context_does_not_define_is_refused() {
         // The policy names a type nothing can resolve. Loading it would put a policy in force that
         // could never match anything, while reading as though it governed vehicles.

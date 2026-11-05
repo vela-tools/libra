@@ -60,6 +60,7 @@ Every field is an allow list. An **absent** field matches everything. An **empty
 
 | Field | Matches |
 | --- | --- |
+| `callers` | `anonymous`: a request that carried no credential; `authenticated`: one that carried a valid JWT or API key |
 | `users` | the account the caller authenticated as, named by the token's `sub` |
 | `principals` | the name of the principal the API key belongs to |
 | `groups` | any one of the caller's groups |
@@ -70,6 +71,8 @@ Every field is an allow list. An **absent** field matches everything. An **empty
 | `entity-types` | an allow: every type the request names; a deny: any type the request names, or none |
 | `queries` | the exact query, compared through its canonical form |
 | `time-interval` | a recurring window during which the request may be made |
+
+`callers` is a single value, not a list. Left out, the policy applies to both kinds of caller. A policy that names no `users`, `principals`, `groups` or `roles` otherwise matches an anonymous caller too, whenever `[multitenancy] policy = "allow-public"` lets one reach the policy set. `callers = "authenticated"` keeps such a policy away from anonymous callers, and `callers = "anonymous"` keeps a public policy away from callers who presented a credential. An anonymous caller has no name, groups or roles, so `callers = "anonymous"` beside `users`, `principals`, `groups` or `roles` can never apply, and is a startup error. So is any value other than `anonymous` or `authenticated`.
 
 An account and a principal are different callers, even when they share a name. `users` never matches a principal, and `principals` never matches a token subject. Roles and groups are compared exactly as the token carries them. They are read only from its top level.
 

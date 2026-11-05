@@ -10,7 +10,8 @@ use libra_policy_model::{condition::CompiledCondition, effect::Effect, identity:
 /// Whether every present condition is satisfied.
 #[must_use]
 pub fn matches(condition: &CompiledCondition, effect: Effect, request: &EvaluationRequest<'_>) -> bool {
-    matches_user(condition, request)
+    matches_callers(condition, request)
+        && matches_user(condition, request)
         && matches_principal(condition, request)
         && matches_groups(condition, request)
         && matches_roles(condition, request)
@@ -20,6 +21,12 @@ pub fn matches(condition: &CompiledCondition, effect: Effect, request: &Evaluati
         && matches_entity_types(condition, effect, request)
         && matches_queries(condition, request)
         && matches_time_interval(condition, request)
+}
+
+/// A policy naming the kind of caller is satisfied only by a caller of that kind: an anonymous one
+/// carries no name, an authenticated one, whether by JWT or API key, carries one.
+fn matches_callers(condition: &CompiledCondition, request: &EvaluationRequest<'_>) -> bool {
+    condition.callers.is_none_or(|callers| callers.admits(request.name.is_some()))
 }
 
 /// A policy naming users is satisfied only by an account of one of those names.

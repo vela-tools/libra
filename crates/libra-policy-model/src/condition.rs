@@ -6,7 +6,7 @@
 use crate::{
     datetime::{deserialize_time_of_day, serialize_time_of_day},
     error::CompileError,
-    identity::{GroupName, PrincipalName, RoleName, TenantSelector, Username},
+    identity::{CallerKind, GroupName, PrincipalName, RoleName, TenantSelector, Username},
     operation::Operation,
     policy::PolicyId,
     query::{CompiledQuerySelector, QuerySelector},
@@ -122,6 +122,10 @@ impl TimeIntervalCondition {
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields, default)]
 pub struct Condition {
+    /// Whether this policy applies to anonymous callers or to authenticated ones. Absent, it applies
+    /// to both.
+    pub callers: Option<CallerKind>,
+
     /// Accounts this policy applies to: callers an identity provider authenticated, by username.
     pub users: Option<Vec<Username>>,
 
@@ -191,6 +195,7 @@ impl Condition {
         };
 
         Ok(CompiledCondition {
+            callers: self.callers,
             users: self.users.clone(),           // compiling borrows the parsed policy
             principals: self.principals.clone(), // compiling borrows the parsed policy
             groups: self.groups.clone(),         // compiling borrows the parsed policy
@@ -208,11 +213,16 @@ impl Condition {
     ///
     /// An empty list is not a wildcard (that is what omitting the field means), so a list with
     /// nothing in it is a policy that can never apply, written as though it applies to something.
+    /// So is an identity condition beside `callers = "anonymous"`: an anonymous caller has no name,
+    /// no groups and no roles for it to match.
     #[must_use]
     pub fn is_satisfiable(&self) -> bool {
         let non_empty = |list: Option<usize>| list != Some(0);
 
-        non_empty(self.users.as_ref().map(Vec::len))
+        let names_identity = self.users.is_some() || self.principals.is_some() || self.groups.is_some() || self.roles.is_some();
+
+        !(names_identity && self.callers.is_some_and(|callers| !callers.can_carry_identity()))
+            && non_empty(self.users.as_ref().map(Vec::len))
             && non_empty(self.principals.as_ref().map(Vec::len))
             && non_empty(self.groups.as_ref().map(Vec::len))
             && non_empty(self.roles.as_ref().map(Vec::len))
@@ -228,6 +238,8 @@ impl Condition {
 /// A condition whose names are IRIs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompiledCondition {
+    /// Whether this policy applies to anonymous callers, authenticated ones, or both.
+    pub callers: Option<CallerKind>,
     /// Accounts this policy applies to.
     pub users: Option<Vec<Username>>,
     /// Principals this policy applies to.
@@ -294,6 +306,38 @@ mod tests {
 
         assert_eq!(condition.users, Some(vec![Username::new("alice").unwrap()]));
         assert_eq!(condition.principals, Some(vec![PrincipalName::new("ingest").unwrap()]));
+    }
+
+    #[test]
+    fn callers_name_the_kind_of_caller_in_kebab_case() {
+        assert_eq!(
+            toml::from_str::<Condition>(r#"callers = "anonymous""#).unwrap().callers,
+            Some(CallerKind::Anonymous)
+        );
+        assert_eq!(
+            toml::from_str::<Condition>(r#"callers = "authenticated""#).unwrap().callers,
+            Some(CallerKind::Authenticated)
+        );
+        assert!(toml::from_str::<Condition>(r#"callers = "everyone""#).is_err());
+        assert!(toml::from_str::<Condition>(r#"callers = "Anonymous""#).is_err());
+    }
+
+    #[test]
+    fn an_anonymous_caller_beside_an_identity_condition_can_never_be_satisfied() {
+        for identity in [
+            r#"users = ["alice"]"#,
+            r#"principals = ["ingest"]"#,
+            r#"groups = ["fleet"]"#,
+            r#"roles = ["reader"]"#,
+        ] {
+            let anonymous: Condition = toml::from_str(&format!("callers = \"anonymous\"\n{identity}")).unwrap();
+            let authenticated: Condition = toml::from_str(&format!("callers = \"authenticated\"\n{identity}")).unwrap();
+
+            assert!(!anonymous.is_satisfiable(), "{identity}");
+            assert!(authenticated.is_satisfiable(), "{identity}");
+        }
+
+        assert!(toml::from_str::<Condition>(r#"callers = "anonymous""#).unwrap().is_satisfiable());
     }
 
     #[test]

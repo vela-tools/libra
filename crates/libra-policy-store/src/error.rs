@@ -84,9 +84,13 @@ pub enum PolicyStoreError {
 
     /// A policy can never apply, or can never allow anything.
     ///
-    /// An empty condition list, or a window whose start is after its end. Both read as a policy and
-    /// enforce as nothing, which is the shape of a policy someone believes is in force.
-    #[error("policy '{id}' in '{path}' can never apply; it has an empty condition list or an impossible window")]
+    /// An empty condition list, a window whose start is after its end, or an identity condition
+    /// beside `callers = "anonymous"`. Each reads as a policy and enforces as nothing, which is the
+    /// shape of a policy someone believes is in force.
+    #[error(
+        "policy '{id}' in '{path}' can never apply; it has an empty condition list, an impossible window, or names \
+         users, principals, groups or roles beside callers = \"anonymous\""
+    )]
     Unsatisfiable {
         /// The policy.
         id: PolicyId,
