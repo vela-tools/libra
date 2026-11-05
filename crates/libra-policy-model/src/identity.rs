@@ -435,6 +435,14 @@ mod tests {
     }
 
     #[test]
+    fn each_kind_of_caller_admits_only_its_own_kind() {
+        assert!(CallerKind::Anonymous.admits(false));
+        assert!(!CallerKind::Anonymous.admits(true));
+        assert!(CallerKind::Authenticated.admits(true));
+        assert!(!CallerKind::Authenticated.admits(false));
+    }
+
+    #[test]
     fn only_a_named_caller_is_authenticated() {
         assert!(!PolicyIdentity::anonymous().is_authenticated());
 
