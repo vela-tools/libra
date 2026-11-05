@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - render absolute iri paths without escaping dots
 
 ### 👷 CI
+- stop dependabot from labelling pull requests
 - make newest pre-release latest until first stable release
 - add cargo machete workflow
 - drop dependabot docker-compose updates
@@ -17,7 +18,11 @@ All notable changes to this project will be documented in this file.
 ### 🔧 Refactor
 - fold name validation into config section name
 
+### 🚀 Features
+- add callers policy condition for anonymous or authenticated callers
+
 ### 🧹 Chores
+- label issue forms by kind and add conformance, performance, docs and note forms
 - sync cliff configuration with cassiopeia
 - sync fuzz lockfile after dependency cleanup
 - remove unused dependencies
