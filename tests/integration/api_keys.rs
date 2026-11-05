@@ -264,3 +264,57 @@ fn a_principal_named_as_an_administrator_or_holding_an_admin_role_passes_the_man
     assert_eq!(info(&by_role), StatusCode::OK);
     assert_eq!(info(&ingest), StatusCode::FORBIDDEN);
 }
+
+/// Allows the default tenant to anonymous callers alone, and tenant `keyed` to authenticated
+/// callers alone.
+const BY_KIND: &str = r#"
+[[policy]]
+id = "anonymous-reads"
+priority = 100
+
+[policy.condition]
+callers = "anonymous"
+tenants = ["*untenanted"]
+operations = ["read"]
+
+[policy.access]
+effect = "allow"
+
+[[policy]]
+id = "authenticated-reads"
+priority = 100
+
+[policy.condition]
+callers = "authenticated"
+tenants = ["keyed"]
+operations = ["read"]
+
+[policy.access]
+effect = "allow"
+"#;
+
+#[test]
+fn a_key_holder_is_an_authenticated_caller_and_not_an_anonymous_one() {
+    let stack = require_stack!();
+    let origin = Origin::serving("application/json", ANSWER);
+    let store = TempDir::new().expect("a temporary directory");
+    let proxy = Proxy::start(&ProxySettings {
+        upstream: origin.address(),
+        key_store: Some(store.path().join("keys.db")),
+        ..ProxySettings::new(&stack, BY_KIND)
+    });
+    let (key, _) = issue(&proxy, "ingest", &[]);
+
+    let keyed = proxy
+        .get(QUERY)
+        .header("NGSILD-Tenant", "keyed")
+        .bearer_auth(&key)
+        .send()
+        .expect("the proxy should answer");
+    assert_eq!(keyed.status(), StatusCode::OK);
+
+    // The suite runs under `allow-public`, so the default tenant is open to anonymous callers, and
+    // the policy for them must not also cover a caller holding a key.
+    assert_eq!(read(&proxy, &key), StatusCode::FORBIDDEN);
+    assert_eq!(proxy.get(QUERY).send().expect("the proxy should answer").status(), StatusCode::OK);
+}

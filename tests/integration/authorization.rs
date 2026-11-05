@@ -250,3 +250,56 @@ effect = "allow"
 
     assert_eq!(response.status(), StatusCode::FORBIDDEN);
 }
+
+/// Allows reads of the default tenant to the kind of caller `callers` names.
+fn reads_for(callers: &str) -> String {
+    format!(
+        r#"
+[[policy]]
+id = "reads-by-kind"
+priority = 100
+
+[policy.condition]
+callers = "{callers}"
+tenants = ["*untenanted"]
+operations = ["read"]
+
+[policy.access]
+effect = "allow"
+"#
+    )
+}
+
+/// Reads the default tenant, with `user`'s token or with no credential at all.
+fn read_untenanted(proxy: &Proxy, user: Option<&str>) -> StatusCode {
+    let request = proxy.get(QUERY);
+    let request = match user {
+        Some(user) => request.bearer_auth(token(user)),
+        None => request,
+    };
+
+    request.send().expect("the proxy should answer").status()
+}
+
+#[test]
+fn a_policy_for_anonymous_callers_does_not_match_an_authenticated_one() {
+    let stack = require_stack!();
+    // The suite runs under `allow-public`, so the anonymous read reaches the policy set.
+    let proxy = Proxy::start(&ProxySettings::new(&stack, &reads_for("anonymous")));
+
+    assert_eq!(read_untenanted(&proxy, None), StatusCode::OK);
+    assert_eq!(
+        read_untenanted(&proxy, Some("writer")),
+        StatusCode::FORBIDDEN,
+        "a public allow must not also cover a caller who presented a credential"
+    );
+}
+
+#[test]
+fn a_policy_for_authenticated_callers_does_not_match_an_anonymous_one() {
+    let stack = require_stack!();
+    let proxy = Proxy::start(&ProxySettings::new(&stack, &reads_for("authenticated")));
+
+    assert_eq!(read_untenanted(&proxy, Some("writer")), StatusCode::OK);
+    assert_eq!(read_untenanted(&proxy, None), StatusCode::FORBIDDEN);
+}

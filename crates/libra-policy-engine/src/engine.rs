@@ -463,6 +463,50 @@ mod tests {
     }
 
     #[test]
+    fn a_callers_condition_matches_only_its_kind_of_caller() {
+        let policy = |callers: &str| {
+            snapshot(
+                &format!(
+                    r#"
+                    [[policy]]
+                    id = "by-kind"
+                    priority = 10
+                    [policy.condition]
+                    {callers}
+                    [policy.access]
+                    effect = "allow"
+                    "#
+                ),
+                Effect::Deny,
+            )
+        };
+        let anonymous = Request {
+            name: None,
+            ..Request::default()
+        };
+        let account = Request::default();
+        let principal = Request {
+            name: Some(IdentityName::Principal(PrincipalName::new("ingest").unwrap())),
+            ..Request::default()
+        };
+
+        let only_anonymous = policy(r#"callers = "anonymous""#);
+        assert_eq!(anonymous.decide(&only_anonymous).effect, Effect::Allow);
+        assert_eq!(account.decide(&only_anonymous).effect, Effect::Deny);
+        assert_eq!(principal.decide(&only_anonymous).effect, Effect::Deny);
+
+        let only_authenticated = policy(r#"callers = "authenticated""#);
+        assert_eq!(anonymous.decide(&only_authenticated).effect, Effect::Deny);
+        assert_eq!(account.decide(&only_authenticated).effect, Effect::Allow);
+        assert_eq!(principal.decide(&only_authenticated).effect, Effect::Allow);
+
+        let either = policy("");
+        assert_eq!(anonymous.decide(&either).effect, Effect::Allow);
+        assert_eq!(account.decide(&either).effect, Effect::Allow);
+        assert_eq!(principal.decide(&either).effect, Effect::Allow);
+    }
+
+    #[test]
     fn users_and_principals_are_separate_namespaces() {
         let policies = snapshot(
             r#"

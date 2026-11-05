@@ -121,6 +121,7 @@ description = "Anyone may read air quality in the default tenant"
 priority = 100
 
 [policy.condition]
+callers = "anonymous"
 tenants = ["*untenanted"]
 operations = ["read"]
 
@@ -131,11 +132,11 @@ effect = "allow"
 allowed = ["AirQualityObserved"]
 ```
 
-**Answers** a read of `AirQualityObserved` that names no tenant, from anyone, with or without a credential. **Refuses** a write, another type, and every request that names a tenant from a caller no other policy covers.
+**Answers** a read of `AirQualityObserved` that names no tenant and carries no credential. **Refuses** a write, another type, and every request that names a tenant from a caller no other policy covers. A caller who presents a credential is not covered by this policy, so the type restriction it carries does not narrow them. Their requests are decided by the policies written for them.
 
 `*untenanted` matches a request that names no tenant. The broker serves such a request from its default tenant. It does not mean any tenant. A named tenant cannot be made public: a request that names a tenant always authenticates, whatever `[multitenancy]` says. An empty `NGSILD-Tenant` header is refused outright rather than read as no tenant.
 
-`allow-public` lets a request without a credential reach the policy set at all. It changes how every policy is read, not only this one. A policy that names no `users`, `principals`, `groups` or `roles` applies to an anonymous caller too. Check the whole set for such policies before switching it on. Keep a restriction on the public policy, as here, so that the public surface is written down. A credential that is presented and refused is still a 401. It never falls back to anonymous.
+`allow-public` lets a request without a credential reach the policy set at all. It changes how every policy is read, not only this one. A policy that names no `users`, `principals`, `groups`, `roles` or `callers` applies to an anonymous caller too. Check the whole set for such policies before switching it on, and add `callers = "authenticated"` to each one that is not meant to be public. Leave `callers` out of the public policy only if it is meant for authenticated callers as well. Keep a restriction on the public policy, as here, so that the public surface is written down. A credential that is presented and refused is still a 401. It never falls back to anonymous.
 
 ## Deny one caller everywhere
 

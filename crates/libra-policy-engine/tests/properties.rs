@@ -65,6 +65,7 @@ fn compile(index: usize, generated: &Generated) -> CompiledPolicy {
         description: String::new(),
         priority: generated.priority,
         condition: CompiledCondition {
+            callers: None,
             users,
             principals: None,
             groups: None,

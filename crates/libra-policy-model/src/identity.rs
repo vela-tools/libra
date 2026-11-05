@@ -260,6 +260,38 @@ impl PolicyIdentity {
     }
 }
 
+/// The kind of caller a policy applies to: one nobody authenticated, or one somebody did.
+///
+/// A policy that names no identity matches every caller, so without this an allow written for
+/// anonymous access under `allow-public` also matches every authenticated caller, and a restriction
+/// it carries narrows them too.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CallerKind {
+    /// A request that carried no credential.
+    Anonymous,
+    /// A request authenticated by a JWT or an API key.
+    Authenticated,
+}
+
+impl CallerKind {
+    /// Whether a caller of this kind can also be named by an identity condition (`users`,
+    /// `principals`, `groups` or `roles`). An anonymous caller has no name, groups or roles.
+    #[must_use]
+    pub const fn can_carry_identity(self) -> bool {
+        matches!(self, Self::Authenticated)
+    }
+
+    /// Whether a caller is of this kind.
+    #[must_use]
+    pub const fn admits(self, authenticated: bool) -> bool {
+        match self {
+            Self::Anonymous => !authenticated,
+            Self::Authenticated => authenticated,
+        }
+    }
+}
+
 /// The literal a policy writes to match a request that carried no tenant.
 ///
 /// `*` cannot appear in a [`TenantId`], so this can never collide with a real tenant name.
