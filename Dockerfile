@@ -1,4 +1,4 @@
-FROM rust:1.99.1-trixie AS chef
+FROM rust:1.100.0-trixie AS chef
 
 RUN cargo install cargo-chef --locked --version 0.1.78
 WORKDIR /libra
